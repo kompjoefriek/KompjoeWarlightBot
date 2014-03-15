@@ -3,6 +3,11 @@ package bot;
 /**
  * Default bot with some modifications:
  *
+ * During start selection it will:
+ * - Prefer small super regions
+ * - Then prefer super regions with less neighbors
+ * - Then prefer super regions with biggest award
+ *
  * During army placement it will:
  * - Prefer to place armies near opponents
  * - Avoid already guarded regions
@@ -12,8 +17,8 @@ package bot;
  *
  */
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
 import main.Region;
+import main.SuperRegion;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
@@ -23,6 +28,7 @@ public class KompjoeConquestBot implements Bot
 {
 	private Comparator<Region> compareArmies;
 	private Comparator<Region> compareArmiesDescending;
+	private Comparator<SuperRegion> comparePreferredSuperRegions;
 
 	public KompjoeConquestBot()
 	{
@@ -33,6 +39,13 @@ public class KompjoeConquestBot implements Bot
 		compareArmiesDescending = new Comparator<Region>()
 		{
 			public int compare(Region o1, Region o2) { return 0-o2.compareTo(o1); }
+		};
+		comparePreferredSuperRegions = new Comparator<SuperRegion>()
+		{
+			public int compare(SuperRegion o1, SuperRegion o2)
+			{
+				return o2.comparePreferredTo(o1);
+			}
 		};
 	}
 
@@ -45,10 +58,33 @@ public class KompjoeConquestBot implements Bot
 	 */
 	public ArrayList<Region> getPreferredStartingRegions(BotState state, Long timeOut)
 	{
-		int count = 0;
 		int max = 6;
+		ArrayList<Region> pickableRegions = new ArrayList<Region>();
+		pickableRegions.addAll(state.getPickableStartingRegions());
 		ArrayList<Region> preferredStartingRegions = new ArrayList<Region>();
 
+		////////////////////////////////////////////////////////////////////////////////////
+		// Find preferred SuperRegions, and use them
+		////////////////////////////////////////////////////////////////////////////////////
+		ArrayList<SuperRegion> preferredSuperRegions = new ArrayList<SuperRegion>();
+		preferredSuperRegions.addAll(state.getFullMap().getSuperRegions());
+		Collections.sort(preferredSuperRegions, comparePreferredSuperRegions);
+
+		for( SuperRegion superRegion : preferredSuperRegions)
+		{
+			for( Region region : superRegion.getSubRegions())
+			{
+				if (pickableRegions.contains(region))
+				{
+					preferredStartingRegions.add(region);
+					pickableRegions.remove(region);
+					if (preferredStartingRegions.size() >= max) { break; }
+				}
+			}
+			if (preferredStartingRegions.size() >= max) { break; }
+		}
+
+		/*
 		////////////////////////////////////////////////////////////////////////////////////
 		// Find out if a complete SuperRegion can be filled with the PickableStartingRegions
 		////////////////////////////////////////////////////////////////////////////////////
@@ -87,22 +123,22 @@ public class KompjoeConquestBot implements Bot
 				count++;
 			}
 		}
-
+		*/
 
 		////////////////////////////////////////////////////////////////////////////////////
 		// Randomly set remaining
 		////////////////////////////////////////////////////////////////////////////////////
-		while (count < max)
+		while (preferredStartingRegions.size() < max)
 		{
 			double rand = Math.random();
-			int r = (int) (rand * state.getPickableStartingRegions().size());
+			int r = (int) (rand * pickableRegions.size());
 			int regionId = state.getPickableStartingRegions().get(r).getId();
 			Region region = state.getFullMap().getRegion(regionId);
 
 			if (!preferredStartingRegions.contains(region))
 			{
 				preferredStartingRegions.add(region);
-				count++;
+				pickableRegions.remove(region);
 			}
 		}
 

@@ -37,6 +37,7 @@ public class Region
 			if (neighbor.getSuperRegion() != superRegion && !neighborSuperRegions.contains(neighbor.getSuperRegion()))
 			{
 				neighborSuperRegions.add(neighbor.getSuperRegion());
+				superRegion.addBorderRegion(this);
 			}
 		}
 	}
@@ -131,8 +132,5 @@ public class Region
 
 		//ascending order
 		return this.armies - compareArmies;
-
-		//descending order
-		//return compareArmies - this.armies;
 	}
 }

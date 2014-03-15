@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ec7232b2-c544-4638-bd74-d17f53dc4a6a" name="Default" comment="" />
+    <list default="true" id="ec7232b2-c544-4638-bd74-d17f53dc4a6a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/bot/KompjoeConquestBot.java" afterPath="$PROJECT_DIR$/src/bot/KompjoeConquestBot.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/Region.java" afterPath="$PROJECT_DIR$/src/main/Region.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/SuperRegion.java" afterPath="$PROJECT_DIR$/src/main/SuperRegion.java" />
+    </list>
     <ignored path="KompjoeConquestBot.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -103,7 +107,25 @@
       <file leaf-file-name="KompjoeConquestBot.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/bot/KompjoeConquestBot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="32" selection-start="320" selection-end="320" vertical-scroll-proportion="-2.1886792" vertical-offset="2244" max-vertical-offset="3145">
+            <state line="6" column="31" selection-start="127" selection-end="127" vertical-scroll-proportion="0.11320755" vertical-offset="0" max-vertical-offset="6392">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Region.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/Region.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="32" column="56" selection-start="770" selection-end="770" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2414">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Map.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/Map.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="128" column="0" selection-start="2789" selection-end="2789" vertical-scroll-proportion="0.0" vertical-offset="1071" max-vertical-offset="2295">
               <folding />
             </state>
           </provider>
@@ -112,7 +134,7 @@
       <file leaf-file-name="SuperRegion.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/SuperRegion.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="64" selection-start="1453" selection-end="1453" vertical-scroll-proportion="0.0" vertical-offset="680" max-vertical-offset="1581">
+            <state line="81" column="61" selection-start="1802" selection-end="1802" vertical-scroll-proportion="0.0" vertical-offset="867" max-vertical-offset="2159">
               <folding />
             </state>
           </provider>
@@ -148,10 +170,10 @@
         <option value="$PROJECT_DIR$/src/move/AttackTransferMove.java" />
         <option value="$PROJECT_DIR$/src/move/PlaceArmiesMove.java" />
         <option value="$PROJECT_DIR$/src/bot/BotState.java" />
-        <option value="$PROJECT_DIR$/src/main/Region.java" />
         <option value="$PROJECT_DIR$/src/bot/BotStarter.java" />
-        <option value="$PROJECT_DIR$/src/main/SuperRegion.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/main/Region.java" />
+        <option value="$PROJECT_DIR$/src/main/SuperRegion.java" />
         <option value="$PROJECT_DIR$/src/bot/KompjoeConquestBot.java" />
       </list>
     </option>
@@ -159,7 +181,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1932" />
+    <option name="width" value="1936" />
     <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -203,6 +225,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="KompjoeConquestBot" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="KompjoeConquestBot" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="KompjoeConquestBot" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -414,7 +450,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1932" height="1056" extended-state="1" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -428,12 +464,13 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901832" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1280683" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12779553" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -457,14 +494,11 @@
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/Map.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="128" column="0" selection-start="2789" selection-end="2789" vertical-scroll-proportion="0.8679245" vertical-offset="1394" max-vertical-offset="2295">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitattributes">
       <provider selected="true" editor-type-id="text-editor">
         <state line="25" column="0" selection-start="520" selection-end="520" vertical-scroll-proportion="0.4716981" vertical-offset="0" max-vertical-offset="901">
@@ -493,13 +527,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/bot/Bot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="0" selection-start="233" selection-end="233" vertical-scroll-proportion="0.20754717" vertical-offset="0" max-vertical-offset="901">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/bot/BotParser.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="13" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0" vertical-offset="782" max-vertical-offset="1683">
@@ -514,20 +541,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/Region.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="50" selection-start="1465" selection-end="1465" vertical-scroll-proportion="0.37069923" vertical-offset="652" max-vertical-offset="2448">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/SuperRegion.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="64" selection-start="1453" selection-end="1453" vertical-scroll-proportion="0.0" vertical-offset="680" max-vertical-offset="1581">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state line="213" column="2" selection-start="2614" selection-end="2614" vertical-scroll-proportion="0.8301887" vertical-offset="2873" max-vertical-offset="3808">
@@ -535,9 +548,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/bot/Bot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="0" selection-start="233" selection-end="233" vertical-scroll-proportion="0.20754717" vertical-offset="0" max-vertical-offset="901">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/Map.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="128" column="0" selection-start="2789" selection-end="2789" vertical-scroll-proportion="0.0" vertical-offset="1071" max-vertical-offset="2295">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/Region.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="56" selection-start="770" selection-end="770" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2414">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/SuperRegion.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="81" column="61" selection-start="1802" selection-end="1802" vertical-scroll-proportion="0.0" vertical-offset="867" max-vertical-offset="2159">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/bot/KompjoeConquestBot.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="32" selection-start="320" selection-end="320" vertical-scroll-proportion="-2.1886792" vertical-offset="2244" max-vertical-offset="3145">
+        <state line="6" column="31" selection-start="127" selection-end="127" vertical-scroll-proportion="0.11320755" vertical-offset="0" max-vertical-offset="6392">
           <folding />
         </state>
       </provider>

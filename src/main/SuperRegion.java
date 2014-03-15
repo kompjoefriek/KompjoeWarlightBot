@@ -4,9 +4,13 @@ import java.util.LinkedList;
 
 public class SuperRegion
 {
+	public static final int MIN_GUARD_BORDER_REGION = 10;
+	public static final int MIN_GUARD_REGION = 1;
+
 	private int id;
 	private int armiesReward;
 	private LinkedList<Region> subRegions;
+	private LinkedList<Region> borderRegions;
 	private boolean fullyGuarded;
 
 	public SuperRegion(int id, int armiesReward)
@@ -14,12 +18,13 @@ public class SuperRegion
 		this.id = id;
 		this.armiesReward = armiesReward;
 		subRegions = new LinkedList<Region>();
+		borderRegions = new LinkedList<Region>();
 		fullyGuarded = false;
 	}
 
 	public void addSubRegion(Region subRegion)
 	{
-		if (!subRegions.contains(subRegion)) subRegions.add(subRegion);
+		if (!subRegions.contains(subRegion)) { subRegions.add(subRegion); }
 	}
 
 	/**
@@ -70,11 +75,11 @@ public class SuperRegion
 			{
 				if (region.getNeighborSuperRegions().size() > 0)
 				{
-					if (region.getArmies() < 10) { fullyGuarded = false; }
+					if (region.getArmies() < MIN_GUARD_BORDER_REGION) { fullyGuarded = false; }
 				}
 				else
 				{
-					if (region.getArmies() < 2) { fullyGuarded = false; }
+					if (region.getArmies() < MIN_GUARD_REGION) { fullyGuarded = false; }
 				}
 			}
 		}
@@ -83,5 +88,34 @@ public class SuperRegion
 	public boolean getFullyGuarded()
 	{
 		return fullyGuarded;
+	}
+
+	/**
+	 * @return A list with the Regions that are part of this SuperRegion, and connect to another SuperRegion
+	 */
+	public LinkedList<Region> getBorderRegions()
+	{
+		return borderRegions;
+	}
+
+
+	public void addBorderRegion(Region region)
+	{
+		if (!borderRegions.contains(region)) { borderRegions.add(region); }
+	}
+
+	public int comparePreferredTo(SuperRegion compareSuperRegion)
+	{
+		if (this.getSubRegions().size() != compareSuperRegion.getSubRegions().size())
+		{
+			return this.getSubRegions().size() - compareSuperRegion.getSubRegions().size();
+		}
+		if (this.getBorderRegions().size() != compareSuperRegion.getBorderRegions().size())
+		{
+			return this.getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
+		}
+
+		// more award is preferred, so i turned them around here :-)
+		return compareSuperRegion.getArmiesReward() - this.getArmiesReward();
 	}
 }
