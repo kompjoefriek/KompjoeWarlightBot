@@ -347,7 +347,7 @@ public class KompjoeConquestBot implements Bot
 								for (Region gangMember : myGang)
 								{
 									attackTransferMoves.add(new AttackTransferMove(myName, gangMember, neighbor, gangMember.getArmies()-SuperRegion.MIN_GUARD_REGION));
-									regionsThatCanDoStuff.remove(gangMember); // Not sure how this works inside an enhanced for loop...
+									//regionsThatCanDoStuff.remove(gangMember); // Ok. Cannot do this inside an enhanced for loop...
 								}
 							}
 							break;
