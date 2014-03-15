@@ -42,10 +42,7 @@ public class KompjoeConquestBot implements Bot
 		};
 		comparePreferredSuperRegions = new Comparator<SuperRegion>()
 		{
-			public int compare(SuperRegion o1, SuperRegion o2)
-			{
-				return o2.comparePreferredTo(o1);
-			}
+			public int compare(SuperRegion o1, SuperRegion o2) { return 0-o2.comparePreferredTo(o1); }
 		};
 	}
 
@@ -286,7 +283,6 @@ public class KompjoeConquestBot implements Bot
 		{
 			// Find nearest opponent
 			boolean foundPath = false;
-
 			for (Region neighbor : regionWithMostArmies.getNeighbors())
 			{
 				if (neighbor.ownedByPlayer(state.getOpponentPlayerName()))
@@ -294,10 +290,10 @@ public class KompjoeConquestBot implements Bot
 					// Found opponent!
 					regionsThatCanDoStuff.remove( neighbor );
 					foundPath = true;
-					int attackArmies = regionWithMostArmies.getArmies()-2;
+					int attackArmies = regionWithMostArmies.getArmies()-SuperRegion.MIN_GUARD_REGION;
 					if (regionWithMostArmies.getNeighborSuperRegions().size() > 0)
 					{
-						attackArmies = regionWithMostArmies.getArmies()-7;
+						attackArmies = regionWithMostArmies.getArmies()-SuperRegion.MIN_GUARD_BORDER_REGION;
 					}
 					attackTransferMoves.add(new AttackTransferMove(myName, regionWithMostArmies, neighbor, attackArmies));
 					break;
@@ -315,34 +311,64 @@ public class KompjoeConquestBot implements Bot
 
 		for (Region fromRegion : regionsThatCanDoStuff)
 		{
-			boolean foundPath = false;
-			if (!foundPath && fromRegion.getArmies() > 6)
+			boolean foundTarget = false;
+			boolean nextToOpponent = false;
+			if (!foundTarget && fromRegion.getArmies() > 6)
 			{
 				// Attack a opponent neighbor?
 				for (Region neighbor : fromRegion.getNeighbors())
 				{
-					if (!neighbor.ownedByPlayer(myName))
+					if (neighbor.ownedByPlayer(state.getOpponentPlayerName()))
 					{
-						foundPath = true;
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-2));
-						break;
+						nextToOpponent = true;
+						if (fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION > neighbor.getArmies()+3)
+						{
+							foundTarget = true;
+							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+							break;
+						}
+						else
+						{
+							// Try to gang-up
+							int armiesAvailableInGang = 0;
+							ArrayList<Region> myGang = new ArrayList<Region>();
+							for (Region neighborNeighbor : regionsThatCanDoStuff)
+							{
+								if (neighborNeighbor.ownedByPlayer(myName))
+								{
+									myGang.add(neighborNeighbor);
+									armiesAvailableInGang += neighborNeighbor.getArmies()-SuperRegion.MIN_GUARD_REGION;
+								}
+							}
+
+							if (armiesAvailableInGang > neighbor.getArmies()+6)
+							{
+								foundTarget = true;
+								for (Region gangMember : myGang)
+								{
+									attackTransferMoves.add(new AttackTransferMove(myName, gangMember, neighbor, gangMember.getArmies()-SuperRegion.MIN_GUARD_REGION));
+									regionsThatCanDoStuff.remove(gangMember); // Not sure how this works inside an enhanced for loop...
+								}
+							}
+							break;
+						}
 					}
 				}
 			}
-			if (!foundPath && fromRegion.getArmies() > 4)
+			if (!foundTarget && !nextToOpponent && fromRegion.getArmies() > 4)
 			{
 				// Attack non-opponent neighbor?
 				for (Region neighbor : fromRegion.getNeighbors())
 				{
 					if (!neighbor.ownedByPlayer(myName) && !neighbor.ownedByPlayer(state.getOpponentPlayerName()))
 					{
-						foundPath = true;
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-2));
+						foundTarget = true;
+						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
 						break;
 					}
 				}
 			}
-			if (!foundPath && fromRegion.getArmies() > 2)
+			if (!foundTarget && !nextToOpponent && fromRegion.getArmies() > SuperRegion.MIN_GUARD_REGION)
 			{
 				// Try to get the borders of a super region guarded
 				for (Region neighbor : fromRegion.getNeighbors())
@@ -351,8 +377,8 @@ public class KompjoeConquestBot implements Bot
 						fromRegion.getNeighborSuperRegions().size() == 0 &&
 						neighbor.getNeighborSuperRegions().size() > 0)
 					{
-						foundPath = true;
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-2));
+						foundTarget = true;
+						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
 						break;
 					}
 				}
