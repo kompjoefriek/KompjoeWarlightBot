@@ -308,9 +308,11 @@ public class KompjoeConquestBot implements Bot
 			}
 		}
 
-
+		ArrayList<Region> regionsThatDidStuff = new ArrayList<Region>();
 		for (Region fromRegion : regionsThatCanDoStuff)
 		{
+			if (regionsThatDidStuff.contains(fromRegion)) { continue; }
+
 			boolean foundTarget = false;
 			boolean nextToOpponent = false;
 			if (!foundTarget && fromRegion.getArmies() > 6)
@@ -325,6 +327,7 @@ public class KompjoeConquestBot implements Bot
 						{
 							foundTarget = true;
 							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+							regionsThatDidStuff.add(fromRegion);
 							break;
 						}
 						else
@@ -334,7 +337,7 @@ public class KompjoeConquestBot implements Bot
 							ArrayList<Region> myGang = new ArrayList<Region>();
 							for (Region neighborNeighbor : regionsThatCanDoStuff)
 							{
-								if (neighborNeighbor.ownedByPlayer(myName))
+								if (neighborNeighbor.ownedByPlayer(myName) && !regionsThatDidStuff.contains(neighborNeighbor))
 								{
 									myGang.add(neighborNeighbor);
 									armiesAvailableInGang += neighborNeighbor.getArmies()-SuperRegion.MIN_GUARD_REGION;
@@ -347,7 +350,7 @@ public class KompjoeConquestBot implements Bot
 								for (Region gangMember : myGang)
 								{
 									attackTransferMoves.add(new AttackTransferMove(myName, gangMember, neighbor, gangMember.getArmies()-SuperRegion.MIN_GUARD_REGION));
-									//regionsThatCanDoStuff.remove(gangMember); // Ok. Cannot do this inside an enhanced for loop...
+									regionsThatDidStuff.add(gangMember);
 								}
 							}
 							break;
@@ -364,6 +367,7 @@ public class KompjoeConquestBot implements Bot
 					{
 						foundTarget = true;
 						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+						regionsThatDidStuff.add(fromRegion);
 						break;
 					}
 				}
@@ -379,6 +383,7 @@ public class KompjoeConquestBot implements Bot
 					{
 						foundTarget = true;
 						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+						regionsThatDidStuff.add(fromRegion);
 						break;
 					}
 				}
