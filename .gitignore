@@ -216,3 +216,10 @@ pip-log.txt
 
 # IntelliJ IDEA
 .idea/dictionaries/
+.idea/workspace.xml
+
+# Compiled output
+out/
+
+# Challenge zips
+*.zip

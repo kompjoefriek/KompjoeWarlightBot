@@ -12,17 +12,31 @@ package bot;
  *
  */
 
+import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
 import main.Region;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class KompjoeConquestBot implements Bot
 {
+	private Comparator<Region> compareArmies;
+	private Comparator<Region> compareArmiesDescending;
+
+	public KompjoeConquestBot()
+	{
+		compareArmies = new Comparator<Region>()
+		{
+			public int compare(Region o1, Region o2) { return o2.compareTo(o1); }
+		};
+		compareArmiesDescending = new Comparator<Region>()
+		{
+			public int compare(Region o1, Region o2) { return 0-o2.compareTo(o1); }
+		};
+	}
+
+
 	@Override
 	/**
 	 * A method used at the start of the game to decide which player start with what Regions. 6 Regions are required to be returned.
@@ -31,20 +45,65 @@ public class KompjoeConquestBot implements Bot
 	 */
 	public ArrayList<Region> getPreferredStartingRegions(BotState state, Long timeOut)
 	{
-		int m = 6;
+		int count = 0;
+		int max = 6;
 		ArrayList<Region> preferredStartingRegions = new ArrayList<Region>();
 
-		// TODO: Do neat stuff here too...
+		////////////////////////////////////////////////////////////////////////////////////
+		// Find out if a complete SuperRegion can be filled with the PickableStartingRegions
+		////////////////////////////////////////////////////////////////////////////////////
+		HashMap<Integer,Integer> superRegionCount = new HashMap<Integer,Integer>();
+		for (Region region : state.getPickableStartingRegions())
+		{
+			int value = 1;
+			if (superRegionCount.containsKey(region.getSuperRegion().getId()))
+			{
+				value += superRegionCount.get(region.getSuperRegion().getId());
+			}
+			superRegionCount.put(region.getSuperRegion().getId(), value);
+		}
 
-		for (int i = 0; i < m; i++)
+		int highest = 0;
+		for (Integer value : superRegionCount.values())
+		{
+			if (value > highest) { highest = value; }
+		}
+
+		int preferredSuperRegion = 0;
+		for (Integer superRegion : superRegionCount.keySet())
+		{
+			if (superRegionCount.get( superRegion ) == highest)
+			{
+				preferredSuperRegion = superRegion;
+				break;
+			}
+		}
+
+		for (Region region : state.getPickableStartingRegions())
+		{
+			if (region.getSuperRegion().getId() == preferredSuperRegion)
+			{
+				preferredStartingRegions.add(region);
+				count++;
+			}
+		}
+
+
+		////////////////////////////////////////////////////////////////////////////////////
+		// Randomly set remaining
+		////////////////////////////////////////////////////////////////////////////////////
+		while (count < max)
 		{
 			double rand = Math.random();
 			int r = (int) (rand * state.getPickableStartingRegions().size());
 			int regionId = state.getPickableStartingRegions().get(r).getId();
 			Region region = state.getFullMap().getRegion(regionId);
 
-			if (!preferredStartingRegions.contains(region)) preferredStartingRegions.add(region);
-			else i--;
+			if (!preferredStartingRegions.contains(region))
+			{
+				preferredStartingRegions.add(region);
+				count++;
+			}
 		}
 
 		return preferredStartingRegions;
@@ -65,9 +124,10 @@ public class KompjoeConquestBot implements Bot
 		int armiesLeft = state.getStartingArmies();
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions();
 
-		// Build list of owned Regions and one with owned Regions net to opponent
+		// Build list of owned Regions and one with owned Regions next to opponent
 		ArrayList<Region> ownedRegions = new ArrayList<Region>();
 		ArrayList<Region> ownedRegionsNextToOpponent = new ArrayList<Region>();
+		ArrayList<Region> ownedRegionsNextToNobody = new ArrayList<Region>();
 		for (Region region : visibleRegions)
 		{
 			if (region.ownedByPlayer(myName))
@@ -75,21 +135,38 @@ public class KompjoeConquestBot implements Bot
 				ownedRegions.add(region);
 				for (Region neighbor : region.getNeighbors())
 				{
-					if (region.ownedByPlayer(opponentName))
+					if (!neighbor.ownedByPlayer(myName))
 					{
-						ownedRegionsNextToOpponent.add(region);
-						break; // Break out of for-loop
+						if (neighbor.ownedByPlayer(opponentName))
+						{
+							if (!ownedRegionsNextToOpponent.contains(region))
+							{
+								ownedRegionsNextToOpponent.add(region);
+							}
+						}
+						else
+						{
+							if (!ownedRegionsNextToNobody.contains(region))
+							{
+								ownedRegionsNextToNobody.add(region);
+							}
+						}
 					}
 				}
 			}
 		}
 
-		Collections.sort(ownedRegionsNextToOpponent, new Comparator<Region>()
-		{
-			public int compare(Region o1, Region o2) { return o2.compareTo(o1); }
-		});
+		Collections.sort(ownedRegionsNextToOpponent, compareArmies);
+		Collections.sort(ownedRegionsNextToNobody, compareArmiesDescending);
 
-		// Prefer to place armies on Regions next to opponent
+		// Try to place armies on the region next to nobody with the most armies (to raise their numbers so it can expand)
+		if (ownedRegionsNextToNobody.size() > 0)
+		{
+			placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToNobody.get(0), armies));
+			armiesLeft -= armies;
+		}
+
+		// Prefer to place armies on Regions next to opponent, regions with less armies first
 		int idxRegion = 0;
 		while (armiesLeft > 0 && idxRegion < ownedRegionsNextToOpponent.size())
 		{
@@ -97,6 +174,20 @@ public class KompjoeConquestBot implements Bot
 			placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToOpponent.get(idxRegion), armies));
 			armiesLeft -= armies;
 			idxRegion++;
+		}
+
+		// If we cannot expand, put all near opponent
+		if (ownedRegionsNextToNobody.size() == 0 && ownedRegionsNextToOpponent.size() > 0)
+		{
+			while(armiesLeft > 0)
+			{
+				for (Region region : ownedRegionsNextToOpponent)
+				{
+					if (armies > armiesLeft) { armies = armiesLeft; }
+					placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
+					armiesLeft -= armies;
+				}
+			}
 		}
 
 		// Try to place the remaining armies randomly
@@ -133,37 +224,101 @@ public class KompjoeConquestBot implements Bot
 		String myName = state.getMyPlayerName();
 		int armies = 5;
 
-		for (Region fromRegion : state.getVisibleMap().getRegions())
+		ArrayList<Region> regionsOwned = new ArrayList<Region>();
+
+		// First lets find the region with the most armies
+		int mostArmies = 0;
+		Region regionWithMostArmies = null;
+
+		for (Region region : state.getVisibleMap().getRegions())
 		{
-			if (fromRegion.ownedByPlayer(myName)) //do an attack
+			if (region.ownedByPlayer(myName)) //do an attack
 			{
-				ArrayList<Region> possibleToRegions = new ArrayList<Region>();
-				possibleToRegions.addAll(fromRegion.getNeighbors());
-
-				while (!possibleToRegions.isEmpty())
+				regionsOwned.add(region);
+				if (region.getArmies() > mostArmies)
 				{
-					double rand = Math.random();
-					int r = (int) (rand * possibleToRegions.size());
-					Region toRegion = possibleToRegions.get(r);
+					mostArmies = region.getArmies();
+					regionWithMostArmies = region;
+				}
+			}
+		}
 
+		ArrayList<Region> regionsThatCanDoStuff = new ArrayList<Region>();
+		regionsThatCanDoStuff.addAll( regionsOwned );
+
+		if ((regionWithMostArmies.getNeighborSuperRegions().size() == 0 && mostArmies > 11) || mostArmies > 16)
+		{
+			// Find nearest opponent
+			boolean foundPath = false;
+
+			for (Region neighbor : regionWithMostArmies.getNeighbors())
+			{
+				if (neighbor.ownedByPlayer(state.getOpponentPlayerName()))
+				{
+					// Found opponent!
+					regionsThatCanDoStuff.remove( neighbor );
+					foundPath = true;
+					int attackArmies = regionWithMostArmies.getArmies()-2;
+					if (regionWithMostArmies.getNeighborSuperRegions().size() > 0)
+					{
+						attackArmies = regionWithMostArmies.getArmies()-7;
+					}
+					attackTransferMoves.add(new AttackTransferMove(myName, regionWithMostArmies, neighbor, attackArmies));
+					break;
+				}
+			}
+
+			if (!foundPath)
+			{
+				//HashMap<Region,Integer> stepsToOpponent = new HashMap<Region,Integer>();
+
+				// TODO: Try dijkstra's to find nearest opponent
+			}
+		}
+
+
+		for (Region fromRegion : regionsThatCanDoStuff)
+		{
+			boolean foundPath = false;
+			if (!foundPath && fromRegion.getArmies() > 6)
+			{
+				// Attack a opponent neighbor?
+				for (Region neighbor : fromRegion.getNeighbors())
+				{
+					if (!neighbor.ownedByPlayer(myName))
+					{
+						foundPath = true;
+						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-2));
+						break;
+					}
+				}
+			}
+			if (!foundPath && fromRegion.getArmies() > 4)
+			{
+				// Attack non-opponent neighbor?
+				for (Region neighbor : fromRegion.getNeighbors())
+				{
+					if (!neighbor.ownedByPlayer(myName) && !neighbor.ownedByPlayer(state.getOpponentPlayerName()))
+					{
+						foundPath = true;
+						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-2));
+						break;
+					}
+				}
+			}
+			if (!foundPath && fromRegion.getArmies() > 2)
+			{
+				// Try to get the borders of a super region guarded
+				for (Region neighbor : fromRegion.getNeighbors())
+				{
 					if (fromRegion.getSuperRegion().ownedByPlayer() != null && // Try to guard SuperRegions
-						fromRegion.getArmies() > 2 &&
-						toRegion.getNeighborSuperRegions().size() > 0)
+						fromRegion.getNeighborSuperRegions().size() == 0 &&
+						neighbor.getNeighborSuperRegions().size() > 0)
 					{
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, toRegion, fromRegion.getArmies()-2));
+						foundPath = true;
+						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-2));
 						break;
 					}
-    				else if (!toRegion.ownedByPlayer(myName) && fromRegion.getArmies() > 6) //do an attack
-					{
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, toRegion, armies));
-						break;
-					}
-					else if (toRegion.ownedByPlayer(myName) && fromRegion.getArmies() > 1) //do a transfer
-					{
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, toRegion, armies));
-						break;
-					}
-					else possibleToRegions.remove(toRegion);
 				}
 			}
 		}
