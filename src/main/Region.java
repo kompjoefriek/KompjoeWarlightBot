@@ -10,6 +10,7 @@ public class Region
 	private SuperRegion superRegion;
 	private int armies;
 	private String playerName;
+	private boolean nextToOpponent;
 
 	public Region(int id, SuperRegion superRegion)
 	{
@@ -24,6 +25,7 @@ public class Region
 		this.neighborSuperRegions = new LinkedList<SuperRegion>();
 		this.playerName = playerName;
 		this.armies = armies;
+		this.nextToOpponent = false;
 
 		superRegion.addSubRegion(this);
 	}
@@ -125,12 +127,34 @@ public class Region
 		return playerName;
 	}
 
-
+	/**
+	 * Used in custom Comparators
+	 * @param compareRegion Region to compare to
+	 * @return A negative int when less armies than compareRegion, positive int when more armies then compareRegion
+	 */
 	public int compareTo(Region compareRegion)
 	{
 		int compareArmies = compareRegion.getArmies();
 
 		//ascending order
 		return this.armies - compareArmies;
+	}
+
+	/**
+	 * Needs to be updated manually before use!
+	 * @param nextToOpponent Set to true when one of its neighbors is owned by the opponent
+	 */
+	public void setNextToOpponent( boolean nextToOpponent )
+	{
+		this.nextToOpponent = nextToOpponent;
+	}
+
+	/**
+	 * Needs to be updated manually before use, via setNextToOpponent
+	 * @return True when nextOpponent was set
+	 */
+	public boolean isNextToOpponent()
+	{
+		return nextToOpponent;
 	}
 }
