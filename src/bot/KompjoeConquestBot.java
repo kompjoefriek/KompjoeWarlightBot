@@ -256,6 +256,7 @@ public class KompjoeConquestBot implements Bot
 		regionsThatCanDoStuff.addAll( regionsOwned );
 		Collections.sort(regionsThatCanDoStuff, compareArmies);
 
+		ArrayList<Region> regionsThatDidStuff = new ArrayList<Region>();
 		for( Region fromRegion : regionsThatCanDoStuff )
 		{
 			boolean toMuchArmies = false;
@@ -286,7 +287,7 @@ public class KompjoeConquestBot implements Bot
 					if (neighbor.ownedByPlayer(opponentName))
 					{
 						// Found opponent!
-						regionsThatCanDoStuff.remove( neighbor );
+						regionsThatDidStuff.add( neighbor );
 						foundPath = true;
 						int attackArmies = fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION;
 						if (fromRegion.getNeighborSuperRegions().size() > 0)
@@ -327,7 +328,7 @@ public class KompjoeConquestBot implements Bot
 								if (endRegionNeighbor.isNextToOpponent()) // Short-cut to skip one loop
 								{
 									// Found opponent!
-									regionsThatCanDoStuff.remove( startRegion );
+									regionsThatDidStuff.add( startRegion );
 									foundPath = true;
 									int attackArmies = fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION;
 									if (fromRegion.getNeighborSuperRegions().size() > 0)
@@ -354,7 +355,6 @@ public class KompjoeConquestBot implements Bot
 			}
 		}
 
-		ArrayList<Region> regionsThatDidStuff = new ArrayList<Region>();
 		for (Region fromRegion : regionsThatCanDoStuff)
 		{
 			if (regionsThatDidStuff.contains(fromRegion)) { continue; }
