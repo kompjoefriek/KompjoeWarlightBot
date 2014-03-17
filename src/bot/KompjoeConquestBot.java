@@ -159,6 +159,7 @@ public class KompjoeConquestBot implements Bot
 		if (ownedRegionsNextToNobody.size() > 0)
 		{
 			placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToNobody.get(0), armies));
+			ownedRegionsNextToNobody.get(0).setArmies(ownedRegionsNextToNobody.get(0).getArmies() + armies); // Update internal stuff
 			armiesLeft -= armies;
 		}
 
@@ -168,6 +169,8 @@ public class KompjoeConquestBot implements Bot
 		{
 			if (armies > armiesLeft) { armies = armiesLeft; }
 			placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToOpponent.get(idxRegion), armies));
+			ownedRegionsNextToOpponent.get(idxRegion).setArmies(
+				ownedRegionsNextToOpponent.get(idxRegion).getArmies() + armies); // Update internal stuff
 			armiesLeft -= armies;
 			idxRegion++;
 		}
@@ -181,6 +184,7 @@ public class KompjoeConquestBot implements Bot
 				{
 					if (armies > armiesLeft) { armies = armiesLeft; }
 					placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
+					region.setArmies(region.getArmies() + armies); // Update internal stuff
 					armiesLeft -= armies;
 				}
 			}
@@ -200,6 +204,7 @@ public class KompjoeConquestBot implements Bot
 			if (!region.getSuperRegion().getFullyGuarded() || tries > state.getFullMap().getRegions().size())
 			{
 				placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
+				region.setArmies(region.getArmies() + armies); // Update internal stuff
 				armiesLeft -= armies;
 			}
 			tries++;
@@ -289,12 +294,9 @@ public class KompjoeConquestBot implements Bot
 						// Found opponent!
 						regionsThatDidStuff.add( neighbor );
 						foundPath = true;
-						int attackArmies = fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION;
-						if (fromRegion.getNeighborSuperRegions().size() > 0)
-						{
-							attackArmies = fromRegion.getArmies()-SuperRegion.MIN_GUARD_BORDER_REGION;
-						}
+						int attackArmies = getAvailableArmies(fromRegion);
 						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, attackArmies));
+
 						break;
 					}
 
@@ -330,11 +332,7 @@ public class KompjoeConquestBot implements Bot
 									// Found opponent!
 									regionsThatDidStuff.add( startRegion );
 									foundPath = true;
-									int attackArmies = fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION;
-									if (fromRegion.getNeighborSuperRegions().size() > 0)
-									{
-										attackArmies = fromRegion.getArmies()-SuperRegion.MIN_GUARD_BORDER_REGION;
-									}
+									int attackArmies = getAvailableArmies(fromRegion);
 									attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, startRegion, attackArmies));
 									break;
 								}
@@ -436,8 +434,63 @@ public class KompjoeConquestBot implements Bot
 			}
 		}
 
-		return attackTransferMoves;
+		////////////////////////////////////////////////////////////////////////////////////
+		// Sort the moves the way we want them
+		////////////////////////////////////////////////////////////////////////////////////
+		ArrayList<AttackTransferMove> sortedAttackTransferMoves = new ArrayList<AttackTransferMove>();
+		while (attackTransferMoves.size() > 0)
+		{
+			boolean changedSomething = false;
+			for (AttackTransferMove move : attackTransferMoves)
+			{
+				boolean isDestination = false;
+				for (AttackTransferMove moveTo : attackTransferMoves)
+				{
+					if (move.getFromRegion() == moveTo.getToRegion())
+					{
+						isDestination = true;
+						break;
+					}
+				}
+
+				if (!isDestination)
+				{
+					move.setArmies(getAvailableArmies(move.getFromRegion()));
+					sortedAttackTransferMoves.add(move);
+					move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
+					changedSomething = true;
+				}
+			}
+
+			if (changedSomething)
+			{
+				attackTransferMoves.removeAll( sortedAttackTransferMoves );
+			}
+			else
+			{
+				for (AttackTransferMove move : attackTransferMoves)
+				{
+					move.setArmies(getAvailableArmies(move.getFromRegion()));
+					sortedAttackTransferMoves.add(move);
+					move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
+				}
+			}
+		}
+
+		return sortedAttackTransferMoves;
 	}
+
+
+	private static int getAvailableArmies( Region region )
+	{
+		int attackArmies = region.getArmies()-SuperRegion.MIN_GUARD_REGION;
+		if (region.getNeighborSuperRegions().size() > 0)
+		{
+			attackArmies = region.getArmies()-SuperRegion.MIN_GUARD_BORDER_REGION;
+		}
+		return attackArmies;
+	}
+
 
 	public static void main(String[] args)
 	{
