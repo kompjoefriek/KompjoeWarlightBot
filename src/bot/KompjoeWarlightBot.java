@@ -23,16 +23,15 @@ import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
-public class KompjoeConquestBot implements Bot
+public class KompjoeWarlightBot implements Bot
 {
 	private Comparator<Region> compareArmies;
 	private Comparator<Region> compareArmiesDescending;
 	private Comparator<SuperRegion> comparePreferredSuperRegions;
 	private ArrayList<SuperRegion> preferredSuperRegions;
 
-	public KompjoeConquestBot()
+	public KompjoeWarlightBot()
 	{
 		compareArmies = new Comparator<Region>()
 		{
@@ -302,76 +301,163 @@ public class KompjoeConquestBot implements Bot
 
 			if (toMuchArmies)
 			{
-				// Find nearest opponent
-				boolean foundPath = false;
-				ArrayList<Region> regionsVisited = new ArrayList<Region>();
-				// Start Region, End Regions
-				HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
-
-				// Cannot go via myself
-				regionsVisited.add(fromRegion);
-				// Set-up starting paths
-				for (Region neighbor : fromRegion.getNeighbors())
+				if (fromRegion.getSuperRegion().ownedByPlayer() == null)
 				{
-					if (neighbor.ownedByPlayer(opponentName))
-					{
-						// Found opponent!
-						regionsThatDidStuff.add( neighbor );
-						foundPath = true;
-						int attackArmies = getAvailableArmies(fromRegion);
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, attackArmies));
+					// This SuperRegion is not owned by me yet!
 
-						break;
-					}
+					// Find nearest region not owned by me, inside the same SuperRegion
+					boolean foundPath = false;
+					ArrayList<Region> regionsVisited = new ArrayList<Region>();
+					// Start Region, End Regions
+					HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
 
-					ArrayList<Region> endRegions = new ArrayList<Region>();
-					for (Region neighborNeighbor : neighbor.getNeighbors())
+					// Cannot go via myself
+					regionsVisited.add(fromRegion);
+					// Set-up starting paths
+					for (Region neighbor : fromRegion.getNeighbors())
 					{
-						if (!regionsVisited.contains(neighborNeighbor))
+						if (neighbor.getSuperRegion() == fromRegion.getSuperRegion() && !neighbor.ownedByPlayer(myName))
 						{
-							endRegions.add( neighborNeighbor );
-							regionsVisited.add( neighborNeighbor );
+							// Found target!
+							regionsThatDidStuff.add( neighbor );
+							foundPath = true;
+							int attackArmies = getAvailableArmies(fromRegion);
+							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, attackArmies));
+
+							break;
 						}
+
+						ArrayList<Region> endRegions = new ArrayList<Region>();
+						for (Region neighborNeighbor : neighbor.getNeighbors())
+						{
+							if (!regionsVisited.contains(neighborNeighbor))
+							{
+								// Stay inside SuperRegion
+								if (neighborNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
+								{
+									endRegions.add( neighborNeighbor );
+								}
+								regionsVisited.add( neighborNeighbor );
+							}
+						}
+
+						// add startRegion to go from, with all its neighbors that we visited.
+						paths.put(neighbor, endRegions);
 					}
 
-					// add startRegion to go from, with all its neighbors that we visited.
-					paths.put(neighbor, endRegions);
-				}
-
-				boolean newRegionsVisited = true;
-				// This search will "fan-out" until it finds an enemy or all regions are visited
-				while( !foundPath && newRegionsVisited )
-				{
-					newRegionsVisited = false;
-					for( Region startRegion : paths.keySet() )
+					boolean newRegionsVisited = true;
+					// This search will "fan-out" until it finds an enemy or all regions are visited
+					while( !foundPath && newRegionsVisited )
 					{
-						ArrayList<Region> newEndRegions = new ArrayList<Region>();
-						for ( Region endRegion : paths.get(startRegion) )
+						newRegionsVisited = false;
+						for( Region startRegion : paths.keySet() )
 						{
-							for (Region endRegionNeighbor : endRegion.getNeighbors())
+							ArrayList<Region> newEndRegions = new ArrayList<Region>();
+							for ( Region endRegion : paths.get(startRegion) )
 							{
-								//if (endRegionNeighbor.ownedByPlayer(opponentName))
-								if (endRegionNeighbor.isNextToOpponent()) // Short-cut to skip one loop
+								for (Region endRegionNeighbor : endRegion.getNeighbors())
 								{
-									// Found opponent!
-									regionsThatDidStuff.add( startRegion );
-									foundPath = true;
-									int attackArmies = getAvailableArmies(fromRegion);
-									attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, startRegion, attackArmies));
-									break;
+									if (endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion() && !endRegionNeighbor.ownedByPlayer(myName))
+									{
+										// Found target!
+										regionsThatDidStuff.add( startRegion );
+										foundPath = true;
+										int attackArmies = getAvailableArmies(fromRegion);
+										attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, startRegion, attackArmies));
+										break;
+									}
+									if (!regionsVisited.contains(endRegionNeighbor))
+									{
+										// Stay inside SuperRegion
+										if (endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
+										{
+											newEndRegions.add( endRegionNeighbor );
+										}
+										regionsVisited.add( endRegionNeighbor );
+										newRegionsVisited = true;
+									}
 								}
-								if (!regionsVisited.contains(endRegionNeighbor))
-								{
-									newEndRegions.add( endRegionNeighbor );
-									regionsVisited.add( endRegionNeighbor );
-									newRegionsVisited = true;
-								}
+								if (foundPath) { break; }
 							}
 							if (foundPath) { break; }
+							// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
+							paths.put(startRegion, newEndRegions);
 						}
-						if (foundPath) { break; }
-						// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
-						paths.put(startRegion, newEndRegions);
+					}
+				}
+				else
+				{
+					// Find nearest opponent
+					boolean foundPath = false;
+					ArrayList<Region> regionsVisited = new ArrayList<Region>();
+					// Start Region, End Regions
+					HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
+
+					// Cannot go via myself
+					regionsVisited.add(fromRegion);
+					// Set-up starting paths
+					for (Region neighbor : fromRegion.getNeighbors())
+					{
+						if (neighbor.ownedByPlayer(opponentName))
+						{
+							// Found opponent!
+							regionsThatDidStuff.add( neighbor );
+							foundPath = true;
+							int attackArmies = getAvailableArmies(fromRegion);
+							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, attackArmies));
+
+							break;
+						}
+
+						ArrayList<Region> endRegions = new ArrayList<Region>();
+						for (Region neighborNeighbor : neighbor.getNeighbors())
+						{
+							if (!regionsVisited.contains(neighborNeighbor))
+							{
+								endRegions.add( neighborNeighbor );
+								regionsVisited.add( neighborNeighbor );
+							}
+						}
+
+						// add startRegion to go from, with all its neighbors that we visited.
+						paths.put(neighbor, endRegions);
+					}
+
+					boolean newRegionsVisited = true;
+					// This search will "fan-out" until it finds an enemy or all regions are visited
+					while( !foundPath && newRegionsVisited )
+					{
+						newRegionsVisited = false;
+						for( Region startRegion : paths.keySet() )
+						{
+							ArrayList<Region> newEndRegions = new ArrayList<Region>();
+							for ( Region endRegion : paths.get(startRegion) )
+							{
+								for (Region endRegionNeighbor : endRegion.getNeighbors())
+								{
+									//if (endRegionNeighbor.ownedByPlayer(opponentName))
+									if (endRegionNeighbor.isNextToOpponent()) // Short-cut to skip one loop
+									{
+										// Found opponent!
+										regionsThatDidStuff.add( startRegion );
+										foundPath = true;
+										int attackArmies = getAvailableArmies(fromRegion);
+										attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, startRegion, attackArmies));
+										break;
+									}
+									if (!regionsVisited.contains(endRegionNeighbor))
+									{
+										newEndRegions.add( endRegionNeighbor );
+										regionsVisited.add( endRegionNeighbor );
+										newRegionsVisited = true;
+									}
+								}
+								if (foundPath) { break; }
+							}
+							if (foundPath) { break; }
+							// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
+							paths.put(startRegion, newEndRegions);
+						}
 					}
 				}
 			}
@@ -539,11 +625,11 @@ public class KompjoeConquestBot implements Bot
 		BotParser parser;
 		if (args.length > 0)
 		{
-			parser = new BotParser(new KompjoeConquestBot(), args[0]);
+			parser = new BotParser(new KompjoeWarlightBot(), args[0]);
 		}
 		else
 		{
-			parser = new BotParser(new KompjoeConquestBot());
+			parser = new BotParser(new KompjoeWarlightBot());
 		}
 		parser.run();
 	}
