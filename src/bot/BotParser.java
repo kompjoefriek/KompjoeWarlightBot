@@ -106,7 +106,7 @@ public class BotParser
 			}
 			else if (parts[0].equals("debug_line"))
 			{
-				// Do nothing
+				System.out.println("DB: "+line);
 			}
 			else
 			{
