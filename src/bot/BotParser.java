@@ -68,21 +68,26 @@ public class BotParser
 				if (parts[1].equals("place_armies"))
 				{
 					//place armies
-					ArrayList<PlaceArmiesMove> placeArmiesMoves = bot
-						.getPlaceArmiesMoves(currentState, Long.valueOf(parts[2]));
+					ArrayList<PlaceArmiesMove> placeArmiesMoves = bot.getPlaceArmiesMoves(currentState,
+						Long.valueOf(parts[2]));
 					for (PlaceArmiesMove move : placeArmiesMoves)
-						output = output.concat(move.getString() + ",");
+					{
+						if (output.length() > 0) { output += ","; }
+						output += move.getString();
+					}
 				}
 				else if (parts[1].equals("attack/transfer"))
 				{
 					//attack/transfer
-					ArrayList<AttackTransferMove> attackTransferMoves = bot
-						.getAttackTransferMoves(currentState, Long.valueOf(parts[2]));
+					ArrayList<AttackTransferMove> attackTransferMoves = bot.getAttackTransferMoves(currentState, Long.valueOf(parts[2]));
 					for (AttackTransferMove move : attackTransferMoves)
-						output = output.concat(move.getString() + ",");
+					{
+						if (output.length() > 0) { output += ","; }
+						output += move.getString();
+					}
 				}
-				if (output.length() > 0) System.out.println(output);
-				else System.out.println("No moves");
+				if (output.length() > 0)	{ System.out.println(output); }
+				else						{ System.out.println("No moves"); }
 			}
 			else if (parts.length == 3 && parts[0].equals("settings"))
 			{
