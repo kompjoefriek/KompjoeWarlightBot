@@ -152,9 +152,16 @@ public class BotState
 
 		//remove regions which are unknown.
 		for (Region region : visibleMap.regions)
-			if (region.getPlayerName().equals("unknown")) unknownRegions.add(region);
+		{
+			if (region.getPlayerName().equals("unknown"))
+			{
+				unknownRegions.add(region);
+			}
+		}
 		for (Region unknownRegion : unknownRegions)
+		{
 			visibleMap.getRegions().remove(unknownRegion);
+		}
 	}
 
 	//Parses a list of the opponent's moves every round. 

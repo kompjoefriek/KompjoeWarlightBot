@@ -4,6 +4,7 @@ import main.Region;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,6 +22,25 @@ public class BotParser
 		this.bot = bot;
 		this.currentState = new BotState();
 	}
+
+
+	public BotParser(Bot bot, String fileName )
+	{
+		File file = new File(fileName);
+		Scanner scanner;
+		try
+		{
+			scanner = new Scanner(file);
+		}
+		catch(Exception e)
+		{
+			scanner = new Scanner(System.in);
+		}
+		this.scan = scanner;
+		this.bot = bot;
+		this.currentState = new BotState();
+	}
+
 
 	public void run()
 	{
@@ -83,6 +103,10 @@ public class BotParser
 			{
 				//all visible opponent moves are given
 				currentState.readOpponentMoves(parts);
+			}
+			else if (parts[0].equals("debug_line"))
+			{
+				// Do nothing
 			}
 			else
 			{

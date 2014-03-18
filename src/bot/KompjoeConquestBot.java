@@ -23,13 +23,14 @@ import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 public class KompjoeConquestBot implements Bot
 {
 	private Comparator<Region> compareArmies;
 	private Comparator<Region> compareArmiesDescending;
 	private Comparator<SuperRegion> comparePreferredSuperRegions;
-	private int round; // Used for debugging
+	private ArrayList<SuperRegion> preferredSuperRegions;
 
 	public KompjoeConquestBot()
 	{
@@ -45,7 +46,7 @@ public class KompjoeConquestBot implements Bot
 		{
 			public int compare(SuperRegion o1, SuperRegion o2) { return 0-o2.comparePreferredTo(o1); }
 		};
-		round = 0;
+		preferredSuperRegions = new ArrayList<SuperRegion>();
 	}
 
 
@@ -65,7 +66,7 @@ public class KompjoeConquestBot implements Bot
 		////////////////////////////////////////////////////////////////////////////////////
 		// Find preferred SuperRegions, and use them
 		////////////////////////////////////////////////////////////////////////////////////
-		ArrayList<SuperRegion> preferredSuperRegions = new ArrayList<SuperRegion>();
+		preferredSuperRegions.clear();
 		preferredSuperRegions.addAll(state.getFullMap().getSuperRegions());
 		Collections.sort(preferredSuperRegions, comparePreferredSuperRegions);
 
@@ -111,14 +112,36 @@ public class KompjoeConquestBot implements Bot
 	 */
 	public ArrayList<PlaceArmiesMove> getPlaceArmiesMoves(BotState state, Long timeOut)
 	{
-		round++;
-
 		ArrayList<PlaceArmiesMove> placeArmiesMoves = new ArrayList<PlaceArmiesMove>();
 		String myName = state.getMyPlayerName();
 		String opponentName = state.getOpponentPlayerName();
 		int armies = 2;
 		int armiesLeft = state.getStartingArmies();
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions();
+/*
+		// Strategy
+		for(SuperRegion superRegion : preferredSuperRegions)
+		{
+			if (superRegion.ownedByPlayer() == null)
+			{
+				int notOwned = 0;
+				for(Region region : superRegion.getSubRegions())
+				{
+					if (!region.ownedByPlayer(myName)) { notOwned++; }
+				}
+				if ( notOwned > 0 && notOwned < 3 )
+				{
+
+				}
+			}
+		}
+*/
+
+		//if (state.getRoundNumber() > 0)
+		//{
+		//	boolean debugMe = true;
+		//}
+
 
 		// Build list of owned Regions and one with owned Regions next to opponent
 		ArrayList<Region> ownedRegions = new ArrayList<Region>();
@@ -221,6 +244,7 @@ public class KompjoeConquestBot implements Bot
 	 */
 	public ArrayList<AttackTransferMove> getAttackTransferMoves(BotState state, Long timeOut)
 	{
+		long deadline = (System.currentTimeMillis() % 1000) + (timeOut - 10);
 		String myName = state.getMyPlayerName();
 		String opponentName = state.getOpponentPlayerName();
 		ArrayList<AttackTransferMove> attackTransferMoves = new ArrayList<AttackTransferMove>();
@@ -438,46 +462,64 @@ public class KompjoeConquestBot implements Bot
 		// Sort the moves the way we want them
 		////////////////////////////////////////////////////////////////////////////////////
 		ArrayList<AttackTransferMove> sortedAttackTransferMoves = new ArrayList<AttackTransferMove>();
-		while (attackTransferMoves.size() > 0)
+		try
 		{
-			boolean changedSomething = false;
-			for (AttackTransferMove move : attackTransferMoves)
+			while (attackTransferMoves.size() > 0)
 			{
-				boolean isDestination = false;
-				for (AttackTransferMove moveTo : attackTransferMoves)
+				if (System.currentTimeMillis() % 1000 >= deadline)
 				{
-					if (move.getFromRegion() == moveTo.getToRegion())
+					break;
+				}
+
+				boolean changedSomething = false;
+				for (AttackTransferMove move : attackTransferMoves)
+				{
+					boolean isDestination = false;
+					for (AttackTransferMove moveTo : attackTransferMoves)
 					{
-						isDestination = true;
-						break;
+						if (move.getFromRegion() == moveTo.getToRegion())
+						{
+							isDestination = true;
+							break;
+						}
+					}
+
+					if (!isDestination)
+					{
+						move.setArmies(getAvailableArmies(move.getFromRegion()));
+						sortedAttackTransferMoves.add(move);
+						move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
+						changedSomething = true;
 					}
 				}
 
-				if (!isDestination)
+				if (!changedSomething)
 				{
-					move.setArmies(getAvailableArmies(move.getFromRegion()));
-					sortedAttackTransferMoves.add(move);
-					move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
-					changedSomething = true;
+					for (AttackTransferMove move : attackTransferMoves)
+					{
+						move.setArmies(getAvailableArmies(move.getFromRegion()));
+						sortedAttackTransferMoves.add(move);
+						move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
+					}
 				}
-			}
 
-			if (changedSomething)
-			{
 				attackTransferMoves.removeAll( sortedAttackTransferMoves );
 			}
-			else
-			{
-				for (AttackTransferMove move : attackTransferMoves)
-				{
-					move.setArmies(getAvailableArmies(move.getFromRegion()));
-					sortedAttackTransferMoves.add(move);
-					move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
-				}
-			}
+		}
+		catch(Exception e)
+		{
+			// Something went wrong... return old stuff
+			return attackTransferMoves;
 		}
 
-		return sortedAttackTransferMoves;
+		if (sortedAttackTransferMoves.size() == 0 || (System.currentTimeMillis() % 1000 >= deadline))
+		{
+			return attackTransferMoves;
+		}
+		else
+		{
+			return sortedAttackTransferMoves;
+		}
 	}
 
 
@@ -494,7 +536,15 @@ public class KompjoeConquestBot implements Bot
 
 	public static void main(String[] args)
 	{
-		BotParser parser = new BotParser(new KompjoeConquestBot());
+		BotParser parser;
+		if (args.length > 0)
+		{
+			parser = new BotParser(new KompjoeConquestBot(), args[0]);
+		}
+		else
+		{
+			parser = new BotParser(new KompjoeConquestBot());
+		}
 		parser.run();
 	}
 }
