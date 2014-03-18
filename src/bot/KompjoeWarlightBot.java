@@ -394,6 +394,11 @@ public class KompjoeWarlightBot implements Bot
 
 					// Cannot go via myself
 					regionsVisited.add(fromRegion);
+					// Visit neighbors to ensure the shortest route
+					for (Region neighbor : fromRegion.getNeighbors())
+					{
+						regionsVisited.add( neighbor );
+					}
 					// Set-up starting paths
 					for (Region neighbor : fromRegion.getNeighbors())
 					{
