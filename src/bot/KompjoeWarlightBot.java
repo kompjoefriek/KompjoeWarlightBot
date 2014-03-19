@@ -294,9 +294,6 @@ public class KompjoeWarlightBot implements Bot
 				fromRegion.getSuperRegion().getFullyGuarded() && !fromRegion.isNextToOpponent()) { toMuchArmies = true; }
 			if (!toMuchArmies && fromRegion.getSuperRegion().ownedByPlayer() == myName && fromRegion.getNeighborSuperRegions().size() == 0 &&
 				fromRegion.getArmies() > SuperRegion.MIN_GUARD_REGION) { toMuchArmies = true; }
-			// TODO: REMOVE THE NEXT LINE!
-			//if (fromRegion.getNeighborSuperRegions().size() == 0 &&
-			//	fromRegion.getArmies() > SuperRegion.MIN_GUARD_REGION) { toMuchArmies = true; }
 
 			if (toMuchArmies)
 			{
@@ -312,6 +309,11 @@ public class KompjoeWarlightBot implements Bot
 
 					// Cannot go via myself
 					regionsVisited.add(fromRegion);
+					// Visit neighbors to ensure the shortest route
+					for (Region neighbor : fromRegion.getNeighbors())
+					{
+						regionsVisited.add( neighbor );
+					}
 					// Set-up starting paths
 					for (Region neighbor : fromRegion.getNeighbors())
 					{
@@ -481,6 +483,10 @@ public class KompjoeWarlightBot implements Bot
 					if (neighbor.ownedByPlayer(opponentName))
 					{
 						nextToOpponent = true;
+						if (!fromRegion.isNextToOpponent())
+						{
+							boolean breakMe = true;
+						}
 						if (fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION > neighbor.getArmies()+3)
 						{
 							foundTarget = true;
@@ -519,6 +525,10 @@ public class KompjoeWarlightBot implements Bot
 						}
 					}
 				}
+			}
+			if (fromRegion.isNextToOpponent() != nextToOpponent)
+			{
+				boolean breakMe = true;
 			}
 			if (!foundTarget && !nextToOpponent && fromRegion.getNeighborSuperRegions().size() == 0 && fromRegion.getArmies() > 4)
 			{
