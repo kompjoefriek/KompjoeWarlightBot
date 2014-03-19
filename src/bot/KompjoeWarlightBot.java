@@ -249,6 +249,8 @@ public class KompjoeWarlightBot implements Bot
 		ArrayList<AttackTransferMove> attackTransferMoves = new ArrayList<AttackTransferMove>();
 		ArrayList<Region> regionsOwned = new ArrayList<Region>();
 
+		boolean opponentIsVisible = false;
+
 		//// First lets find the region with the most armies
 		//int mostArmies = 0;
 		//Region ownedRegionWithMostArmies = null;
@@ -263,6 +265,10 @@ public class KompjoeWarlightBot implements Bot
 				//	mostArmies = region.getArmies();
 				//	ownedRegionWithMostArmies = region;
 				//}
+			}
+			else if (region.ownedByPlayer(opponentName))
+			{
+				opponentIsVisible = true;
 			}
 
 			boolean nextToOpponent = false;
@@ -404,7 +410,7 @@ public class KompjoeWarlightBot implements Bot
 					// Set-up starting paths
 					for (Region neighbor : fromRegion.getNeighbors())
 					{
-						if (neighbor.ownedByPlayer(opponentName))
+						if (neighbor.ownedByPlayer(opponentName) || (!opponentIsVisible && !neighbor.ownedByPlayer(myName)))
 						{
 							// Found opponent!
 							regionsThatDidStuff.add( neighbor );
@@ -441,8 +447,7 @@ public class KompjoeWarlightBot implements Bot
 							{
 								for (Region endRegionNeighbor : endRegion.getNeighbors())
 								{
-									//if (endRegionNeighbor.ownedByPlayer(opponentName))
-									if (endRegionNeighbor.isNextToOpponent()) // Short-cut to skip one loop
+									if (endRegionNeighbor.ownedByPlayer(opponentName) || (!opponentIsVisible && !endRegionNeighbor.ownedByPlayer(myName)))
 									{
 										// Found opponent!
 										regionsThatDidStuff.add( startRegion );
