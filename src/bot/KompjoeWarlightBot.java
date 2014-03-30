@@ -40,6 +40,8 @@ public class KompjoeWarlightBot implements Bot
 	private Strategy strategy;
 	private SuperRegion superRegionGet; // used with Strategy.CONTINENT_GET
 
+	private int noAttacksCounter = 0;
+
 	public KompjoeWarlightBot()
 	{
 		compareArmies = new Comparator<Region>()
@@ -172,7 +174,7 @@ public class KompjoeWarlightBot implements Bot
 		superRegionGet = null;
 		for ( SuperRegion superRegion : preferredSuperRegions.subList(0,3) )
 		{
-			if (!superRegion.ownedByPlayer().matches(myName))
+			if (superRegion.ownedByPlayer() != myName)
 			{
 				strategy = Strategy.CONTINENT_GET;
 				superRegionGet = superRegion;
@@ -352,7 +354,7 @@ public class KompjoeWarlightBot implements Bot
 			}
 
 			boolean toMuchArmies = false;
-			if (fromRegion.getArmies() > SuperRegion.MIN_GUARD_BORDER_REGION + 5)
+			if (fromRegion.getArmies() > SuperRegion.MIN_GUARD_BORDER_REGION)
 				{ toMuchArmies = true; }
 			if (!toMuchArmies && fromRegion.getNeighborSuperRegions().size() > 0 && fromRegion.getArmies() > SuperRegion.MIN_GUARD_BORDER_REGION &&
 				fromRegion.getSuperRegion().getFullyGuarded() && !fromRegion.isNextToOpponent()) { toMuchArmies = true; }
@@ -620,6 +622,51 @@ public class KompjoeWarlightBot implements Bot
 						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
 						regionsThatDidStuff.add(fromRegion);
 						break;
+					}
+				}
+			}
+		}
+
+		// Lame-ass stalemate detection
+		if (attackTransferMoves.size() == 0)	{ noAttacksCounter++; }
+		else                               		{ noAttacksCounter = 0; }
+
+		if (noAttacksCounter > 5)
+		{
+			if (regionsThatCanDoStuff.size() > 0)
+			{
+				for (Region region : regionsThatCanDoStuff)
+				{
+					if (!regionsThatDidStuff.contains(region) && region.isNextToOpponent())
+					{
+						int maxOpponentArmies = 0;
+						Region maxOpponent = null;
+						// Collect all armies around me
+						for (Region subRegion : region.getNeighbors())
+						{
+							if (!regionsThatDidStuff.contains(subRegion) && subRegion.ownedByPlayer(myName))
+							{
+								int armiesToMove = subRegion.getArmies()-SuperRegion.MIN_GUARD_REGION;
+								attackTransferMoves.add(new AttackTransferMove(myName, subRegion, region, armiesToMove));
+								regionsThatDidStuff.add(subRegion);
+								region.setArmies(region.getArmies()+armiesToMove); // update internal stuff
+							}
+							else if (subRegion.ownedByPlayer(opponentName))
+							{
+								if (subRegion.getArmies() > maxOpponentArmies)
+								{
+									maxOpponentArmies = subRegion.getArmies();
+									maxOpponent = subRegion;
+								}
+							}
+						}
+
+						if (maxOpponent != null)
+						{
+							attackTransferMoves.add(new AttackTransferMove(myName, region, maxOpponent, region.getArmies()-SuperRegion.MIN_GUARD_REGION));
+							regionsThatDidStuff.add(region);
+							noAttacksCounter = 0;
+						}
 					}
 				}
 			}
