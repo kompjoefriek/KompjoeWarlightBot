@@ -26,10 +26,19 @@ import java.util.*;
 
 public class KompjoeWarlightBot implements Bot
 {
+	public enum Strategy
+	{
+		DEFAULT,
+		CONTINENT_GET // http://knowyourmeme.com/memes/get
+	};
+
 	private Comparator<Region> compareArmies;
 	private Comparator<Region> compareArmiesDescending;
 	private Comparator<SuperRegion> comparePreferredSuperRegions;
 	private ArrayList<SuperRegion> preferredSuperRegions;
+
+	private Strategy strategy;
+	private SuperRegion superRegionGet; // used with Strategy.CONTINENT_GET
 
 	public KompjoeWarlightBot()
 	{
@@ -37,15 +46,21 @@ public class KompjoeWarlightBot implements Bot
 		{
 			public int compare(Region o1, Region o2) { return o2.compareTo(o1); }
 		};
+
 		compareArmiesDescending = new Comparator<Region>()
 		{
 			public int compare(Region o1, Region o2) { return 0-o2.compareTo(o1); }
 		};
+
 		comparePreferredSuperRegions = new Comparator<SuperRegion>()
 		{
 			public int compare(SuperRegion o1, SuperRegion o2) { return 0-o2.comparePreferredTo(o1); }
 		};
+
 		preferredSuperRegions = new ArrayList<SuperRegion>();
+
+		strategy = Strategy.DEFAULT;
+		superRegionGet = null;
 	}
 
 
@@ -117,30 +132,6 @@ public class KompjoeWarlightBot implements Bot
 		int armies = 2;
 		int armiesLeft = state.getStartingArmies();
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions();
-/*
-		// Strategy
-		for(SuperRegion superRegion : preferredSuperRegions)
-		{
-			if (superRegion.ownedByPlayer() == null)
-			{
-				int notOwned = 0;
-				for(Region region : superRegion.getSubRegions())
-				{
-					if (!region.ownedByPlayer(myName)) { notOwned++; }
-				}
-				if ( notOwned > 0 && notOwned < 3 )
-				{
-
-				}
-			}
-		}
-*/
-
-		//if (state.getRoundNumber() > 0)
-		//{
-		//	boolean debugMe = true;
-		//}
-
 
 		// Build list of owned Regions and one with owned Regions next to opponent
 		ArrayList<Region> ownedRegions = new ArrayList<Region>();
@@ -176,6 +167,57 @@ public class KompjoeWarlightBot implements Bot
 
 		Collections.sort(ownedRegionsNextToOpponent, compareArmies);
 		Collections.sort(ownedRegionsNextToNobody, compareArmiesDescending);
+
+		strategy = Strategy.DEFAULT;
+		superRegionGet = null;
+		for ( SuperRegion superRegion : preferredSuperRegions.subList(0,3) )
+		{
+			if (!superRegion.ownedByPlayer().matches(myName))
+			{
+				strategy = Strategy.CONTINENT_GET;
+				superRegionGet = superRegion;
+
+				boolean someOwnedByMe = false;
+				for ( Region subRegion : superRegion.getSubRegions() )
+				{
+					if (subRegion.ownedByPlayer(myName))
+					{
+						someOwnedByMe = true;
+						break;
+					}
+				}
+
+				if (someOwnedByMe)
+				{
+					// Ok, lets get this superRegion
+					break;
+				}
+			}
+		}
+
+
+		if (strategy == Strategy.CONTINENT_GET && superRegionGet != null)
+		{
+			// Find regions in this superRegion we can take-over
+			ArrayList<Region> regionsToTakeOver = new ArrayList<Region>();
+			for ( Region subRegion : superRegionGet.getSubRegions() )
+			{
+				if (!subRegion.ownedByPlayer(myName))
+				{
+					for (Region subRegionNeighbor : subRegion.getNeighbors())
+					{
+						if (subRegionNeighbor.ownedByPlayer(myName))
+						{
+							placeArmiesMoves.add(new PlaceArmiesMove(myName, subRegionNeighbor, armiesLeft));
+							subRegionNeighbor.setArmies(subRegionNeighbor.getArmies() + armiesLeft); // Update internal stuff
+							//armiesLeft -= armiesLeft;
+							return placeArmiesMoves;
+						}
+					}
+				}
+			}
+		}
+
 
 		// Try to place armies on the region next to nobody with the most armies (to raise their numbers so it can expand)
 		if (ownedRegionsNextToNobody.size() > 0)
@@ -293,6 +335,22 @@ public class KompjoeWarlightBot implements Bot
 		ArrayList<Region> regionsThatDidStuff = new ArrayList<Region>();
 		for( Region fromRegion : regionsThatCanDoStuff )
 		{
+			// First check if this region is not next to an opponent (and is a thread)
+			int threadCount = 0;
+			for ( Region neighbor : fromRegion.getNeighbors() )
+			{
+				if (neighbor.ownedByPlayer(opponentName))
+				{
+					threadCount += neighbor.getArmies();
+				}
+			}
+			if (threadCount >= fromRegion.getArmies() - 3)
+			{
+				// fromRegion is defending :-)
+				regionsThatDidStuff.add(fromRegion);
+				continue;
+			}
+
 			boolean toMuchArmies = false;
 			if (fromRegion.getArmies() > SuperRegion.MIN_GUARD_BORDER_REGION + 5)
 				{ toMuchArmies = true; }

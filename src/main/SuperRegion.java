@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class SuperRegion
 {
-	public static final int MIN_GUARD_BORDER_REGION = 5;
+	public static final int MIN_GUARD_BORDER_REGION = 3;
 	public static final int MIN_GUARD_REGION = 1;
 
 	private int id;
