@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class SuperRegion
 {
-	public static final int MIN_GUARD_BORDER_REGION = 3;
+	public static final int MIN_GUARD_BORDER_REGION = 1; // Use this to enable guarding
 	public static final int MIN_GUARD_REGION = 1;
 
 	private int id;
@@ -104,18 +104,24 @@ public class SuperRegion
 		if (!borderRegions.contains(region)) { borderRegions.add(region); }
 	}
 
+
 	public int comparePreferredTo(SuperRegion compareSuperRegion)
 	{
+		// Exception for australia (http://webtrax.hu/myfacewhen/faces/lineart-memes/nothing-to-do-here-jet-pack-guy.jpg)
+		if (this.getBorderRegions().size() == 1) { return 1; }
+		if (compareSuperRegion.getBorderRegions().size() == 1) { return -1; }
+		// Smaller super regions are preferred
 		if (this.getSubRegions().size() != compareSuperRegion.getSubRegions().size())
 		{
 			return this.getSubRegions().size() - compareSuperRegion.getSubRegions().size();
 		}
+		// Less border regions are preferred
 		if (this.getBorderRegions().size() != compareSuperRegion.getBorderRegions().size())
 		{
 			return this.getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
 		}
 
-		// more award is preferred, so i turned them around here :-)
+		// More award is preferred, so i turned them around here :-)
 		return compareSuperRegion.getArmiesReward() - this.getArmiesReward();
 	}
 }

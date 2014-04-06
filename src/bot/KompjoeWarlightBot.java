@@ -94,7 +94,7 @@ public class KompjoeWarlightBot implements Bot
 				{
 					preferredStartingRegions.add(region);
 					pickableRegions.remove(region);
-					if (preferredStartingRegions.size() >= max) { break; }
+					//if (preferredStartingRegions.size() >= max) { break; }
 				}
 			}
 			if (preferredStartingRegions.size() >= max) { break; }
@@ -119,6 +119,22 @@ public class KompjoeWarlightBot implements Bot
 
 		return preferredStartingRegions;
 	}
+
+
+	// Group placement commands together
+	private void placeArmies(ArrayList<PlaceArmiesMove> placeArmiesMoves, String myName, Region place, int armies )
+	{
+		for (PlaceArmiesMove move : placeArmiesMoves)
+		{
+			if (move.getRegion().getId() == place.getId())
+			{
+				move.setArmies(move.getArmies() + armies);
+				return;
+			}
+		}
+		placeArmiesMoves.add(new PlaceArmiesMove(myName, place, armies));
+	}
+
 
 	@Override
 	/**
@@ -224,7 +240,8 @@ public class KompjoeWarlightBot implements Bot
 		// Try to place armies on the region next to nobody with the most armies (to raise their numbers so it can expand)
 		if (ownedRegionsNextToNobody.size() > 0)
 		{
-			placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToNobody.get(0), armies));
+			placeArmies( placeArmiesMoves, myName, ownedRegionsNextToNobody.get(0), armies );
+			//placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToNobody.get(0), armies));
 			ownedRegionsNextToNobody.get(0).setArmies(ownedRegionsNextToNobody.get(0).getArmies() + armies); // Update internal stuff
 			armiesLeft -= armies;
 		}
@@ -234,9 +251,9 @@ public class KompjoeWarlightBot implements Bot
 		while (armiesLeft > 0 && idxRegion < ownedRegionsNextToOpponent.size())
 		{
 			if (armies > armiesLeft) { armies = armiesLeft; }
-			placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToOpponent.get(idxRegion), armies));
-			ownedRegionsNextToOpponent.get(idxRegion).setArmies(
-				ownedRegionsNextToOpponent.get(idxRegion).getArmies() + armies); // Update internal stuff
+			placeArmies( placeArmiesMoves, myName, ownedRegionsNextToOpponent.get(idxRegion), armies );
+			//placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToOpponent.get(idxRegion), armies));
+			ownedRegionsNextToOpponent.get(idxRegion).setArmies( ownedRegionsNextToOpponent.get(idxRegion).getArmies() + armies); // Update internal stuff
 			armiesLeft -= armies;
 			idxRegion++;
 		}
@@ -249,7 +266,8 @@ public class KompjoeWarlightBot implements Bot
 				for (Region region : ownedRegionsNextToOpponent)
 				{
 					if (armies > armiesLeft) { armies = armiesLeft; }
-					placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
+					placeArmies( placeArmiesMoves, myName, region, armies );
+					//placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
 					region.setArmies(region.getArmies() + armies); // Update internal stuff
 					armiesLeft -= armies;
 				}
@@ -269,7 +287,8 @@ public class KompjoeWarlightBot implements Bot
 			// Do not award armies to fully guarded SuperRegions (unless we have to)
 			if (!region.getSuperRegion().getFullyGuarded() || tries > state.getFullMap().getRegions().size())
 			{
-				placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
+				placeArmies( placeArmiesMoves, myName, region, armies );
+				//placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
 				region.setArmies(region.getArmies() + armies); // Update internal stuff
 				armiesLeft -= armies;
 			}
@@ -649,7 +668,7 @@ public class KompjoeWarlightBot implements Bot
 								int armiesToMove = subRegion.getArmies()-SuperRegion.MIN_GUARD_REGION;
 								attackTransferMoves.add(new AttackTransferMove(myName, subRegion, region, armiesToMove));
 								regionsThatDidStuff.add(subRegion);
-								region.setArmies(region.getArmies()+armiesToMove); // update internal stuff
+								//region.setArmies(region.getArmies()+armiesToMove); // update internal stuff
 							}
 							else if (subRegion.ownedByPlayer(opponentName))
 							{
@@ -700,17 +719,17 @@ public class KompjoeWarlightBot implements Bot
 
 					if (!isDestination)
 					{
-						if (move.getToRegion().ownedByPlayer(opponentName))
-						{
-							// Always attack with max force
-							move.setArmies(move.getFromRegion().getArmies()-SuperRegion.MIN_GUARD_REGION);
-						}
-						else
-						{
-							move.setArmies(getAvailableArmies(move.getFromRegion(), myName));
-						}
+						//if (move.getToRegion().ownedByPlayer(opponentName))
+						//{
+						//	// Always attack with max force
+						//	move.setArmies(move.getFromRegion().getArmies()-SuperRegion.MIN_GUARD_REGION);
+						//}
+						//else
+						//{
+						//	move.setArmies(getAvailableArmies(move.getFromRegion(), myName));
+						//}
 						sortedAttackTransferMoves.add(move);
-						move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
+						//move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
 						changedSomething = true;
 					}
 				}
@@ -719,17 +738,17 @@ public class KompjoeWarlightBot implements Bot
 				{
 					for (AttackTransferMove move : attackTransferMoves)
 					{
-						if (move.getToRegion().ownedByPlayer(opponentName))
-						{
-							// Always attack with max force
-							move.setArmies(move.getFromRegion().getArmies()-SuperRegion.MIN_GUARD_REGION);
-						}
-						else
-						{
-							move.setArmies(getAvailableArmies(move.getFromRegion(), myName));
-						}
+						//if (move.getToRegion().ownedByPlayer(opponentName))
+						//{
+						//	// Always attack with max force
+						//	move.setArmies(move.getFromRegion().getArmies()-SuperRegion.MIN_GUARD_REGION);
+						//}
+						//else
+						//{
+						//	move.setArmies(getAvailableArmies(move.getFromRegion(), myName));
+						//}
 						sortedAttackTransferMoves.add(move);
-						move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
+						//move.getToRegion().setArmies(move.getToRegion().getArmies()+move.getArmies());
 					}
 				}
 
