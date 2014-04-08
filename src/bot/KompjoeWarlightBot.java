@@ -139,6 +139,35 @@ public class KompjoeWarlightBot implements Bot
 	}
 
 
+	private void attack(ArrayList<AttackTransferMove> attackTransferMoves, String myName, String opponentName, Region fromRegion, Region toRegion)
+	{
+		int attackArmies = getAvailableArmies(fromRegion, myName);
+		if (attackArmies > (toRegion.getArmies() * 3)+6)
+		{
+			// See if we can split up
+			Region enemy = null;
+			for (Region neighbor : fromRegion.getNeighbors())
+			{
+				if (neighbor != toRegion && neighbor.ownedByPlayer(opponentName))
+				{
+					if (enemy == null || neighbor.getArmies() > enemy.getArmies())
+					{
+						enemy = neighbor;
+					}
+				}
+			}
+
+			if (enemy != null)
+			{
+				int otherAttackerEnemies = attackArmies/2;
+				attackArmies -= otherAttackerEnemies;
+				attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, enemy, otherAttackerEnemies));
+			}
+		}
+		attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, toRegion, attackArmies));
+	}
+
+
 	@Override
 	/**
 	 * This method is called for at first part of each round. This example puts two armies on random regions
@@ -189,7 +218,7 @@ public class KompjoeWarlightBot implements Bot
 		Collections.sort(ownedRegionsNextToOpponent, compareArmies);
 		Collections.sort(ownedRegionsNextToNobody, compareArmiesDescending);
 
-		if (state.getRoundNumber() > 85)
+		if (state.getRoundNumber() >= 50)
 		{
 			strategy = Strategy.AGRO_MODE;
 		}
@@ -426,9 +455,7 @@ public class KompjoeWarlightBot implements Bot
 							// Found target!
 							regionsThatDidStuff.add( neighbor );
 							foundPath = true;
-							int attackArmies = getAvailableArmies(fromRegion, myName);
-							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, attackArmies));
-
+							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
 							break;
 						}
 
@@ -467,8 +494,7 @@ public class KompjoeWarlightBot implements Bot
 										// Found target!
 										regionsThatDidStuff.add( startRegion );
 										foundPath = true;
-										int attackArmies = getAvailableArmies(fromRegion, myName);
-										attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, startRegion, attackArmies));
+										attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
 										break;
 									}
 									if (!regionsVisited.contains(endRegionNeighbor))
@@ -513,9 +539,7 @@ public class KompjoeWarlightBot implements Bot
 							// Found opponent!
 							regionsThatDidStuff.add( neighbor );
 							foundPath = true;
-							int attackArmies = getAvailableArmies(fromRegion, myName);
-							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, attackArmies));
-
+							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
 							break;
 						}
 
@@ -550,8 +574,7 @@ public class KompjoeWarlightBot implements Bot
 										// Found opponent!
 										regionsThatDidStuff.add( startRegion );
 										foundPath = true;
-										int attackArmies = getAvailableArmies(fromRegion, myName);
-										attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, startRegion, attackArmies));
+										attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
 										break;
 									}
 									if (!regionsVisited.contains(endRegionNeighbor))
@@ -593,7 +616,7 @@ public class KompjoeWarlightBot implements Bot
 						if (fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION > neighbor.getArmies()+3)
 						{
 							foundTarget = true;
-							attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
 							regionsThatDidStuff.add(fromRegion);
 							break;
 						}
@@ -620,7 +643,7 @@ public class KompjoeWarlightBot implements Bot
 								foundTarget = true;
 								for (Region gangMember : myGang)
 								{
-									attackTransferMoves.add(new AttackTransferMove(myName, gangMember, neighbor, getAvailableArmies(gangMember, myName)));
+									attack(attackTransferMoves, myName, opponentName, gangMember, neighbor);
 									regionsThatDidStuff.add(gangMember);
 								}
 							}
@@ -641,7 +664,7 @@ public class KompjoeWarlightBot implements Bot
 					if (!neighbor.ownedByPlayer(myName) && !neighbor.ownedByPlayer(opponentName))
 					{
 						foundTarget = true;
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+						attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
 						regionsThatDidStuff.add(fromRegion);
 						break;
 					}
@@ -657,7 +680,7 @@ public class KompjoeWarlightBot implements Bot
 						neighbor.getNeighborSuperRegions().size() > 0)
 					{
 						// foundTarget = true;
-						attackTransferMoves.add(new AttackTransferMove(myName, fromRegion, neighbor, fromRegion.getArmies()-SuperRegion.MIN_GUARD_REGION));
+						attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
 						regionsThatDidStuff.add(fromRegion);
 						break;
 					}
@@ -702,14 +725,16 @@ public class KompjoeWarlightBot implements Bot
 
 						if (maxOpponent != null)
 						{
-							attackTransferMoves.add(new AttackTransferMove(myName, region, maxOpponent, region.getArmies()-SuperRegion.MIN_GUARD_REGION));
+							attackTransferMoves.add(new AttackTransferMove(myName, region, maxOpponent,
+								region.getArmies() - SuperRegion.MIN_GUARD_REGION));
 							regionsThatDidStuff.add(region);
 							// Attack with
 							for (Region neighbor : maxOpponent.getNeighbors())
 							{
 								if (neighbor.ownedByPlayer(myName))
 								{
-									attackTransferMoves.add(new AttackTransferMove(myName, neighbor, maxOpponent, neighbor.getArmies()-SuperRegion.MIN_GUARD_REGION));
+									attackTransferMoves.add(new AttackTransferMove(myName, neighbor, maxOpponent,
+										neighbor.getArmies() - SuperRegion.MIN_GUARD_REGION));
 									regionsThatDidStuff.add(region);
 								}
 							}

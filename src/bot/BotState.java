@@ -131,6 +131,11 @@ public class BotState
 	public void updateMap(String[] mapInput)
 	{
 		visibleMap = fullMap.getMapCopy();
+		for (Region region : visibleMap.regions)
+		{
+			region.setUpdated(false);
+		}
+
 		for (int i = 1; i < mapInput.length; i++)
 		{
 			try
@@ -141,6 +146,8 @@ public class BotState
 
 				region.setPlayerName(playerName);
 				region.setArmies(armies);
+				region.setUpdated(true);
+
 				i += 2;
 			}
 			catch (Exception e)
@@ -150,11 +157,14 @@ public class BotState
 		}
 		ArrayList<Region> unknownRegions = new ArrayList<Region>();
 
-		//remove regions which are unknown.
+		// Remove regions which are not visible.
 		for (Region region : visibleMap.regions)
 		{
-			if (region.getPlayerName().equals("unknown"))
+			if (!region.getUpdated())
 			{
+				region.setPlayerName("unknown");
+				region.setArmies(2);
+
 				unknownRegions.add(region);
 			}
 		}

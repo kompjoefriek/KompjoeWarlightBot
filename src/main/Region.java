@@ -11,6 +11,7 @@ public class Region
 	private int armies;
 	private String playerName;
 	private boolean nextToOpponent;
+	private boolean updated;
 
 	public Region(int id, SuperRegion superRegion)
 	{
@@ -26,6 +27,7 @@ public class Region
 		this.playerName = playerName;
 		this.armies = armies;
 		this.nextToOpponent = false;
+		this.updated = false;
 
 		superRegion.addSubRegion(this);
 	}
@@ -156,5 +158,17 @@ public class Region
 	public boolean isNextToOpponent()
 	{
 		return nextToOpponent;
+	}
+
+
+	public void setUpdated(boolean updated)
+	{
+		this.updated = updated;
+	}
+
+
+	public boolean getUpdated()
+	{
+		return this.updated;
 	}
 }
