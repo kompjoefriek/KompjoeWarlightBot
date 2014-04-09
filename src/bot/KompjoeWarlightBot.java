@@ -182,6 +182,7 @@ public class KompjoeWarlightBot implements Bot
 		int armies = 2;
 		int armiesLeft = state.getStartingArmies();
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions();
+		boolean opponentVisible = false;
 
 		// Build list of owned Regions and one with owned Regions next to opponent
 		ArrayList<Region> ownedRegions = new ArrayList<Region>();
@@ -198,6 +199,7 @@ public class KompjoeWarlightBot implements Bot
 					{
 						if (neighbor.ownedByPlayer(opponentName))
 						{
+							opponentVisible = true;
 							if (!ownedRegionsNextToOpponent.contains(region))
 							{
 								ownedRegionsNextToOpponent.add(region);
@@ -218,7 +220,7 @@ public class KompjoeWarlightBot implements Bot
 		Collections.sort(ownedRegionsNextToOpponent, compareArmies);
 		Collections.sort(ownedRegionsNextToNobody, compareArmiesDescending);
 
-		if (state.getRoundNumber() >= 50)
+		if ((state.getRoundNumber() <= 5 && opponentVisible) ||  state.getRoundNumber() >= 50)
 		{
 			strategy = Strategy.AGRO_MODE;
 		}
