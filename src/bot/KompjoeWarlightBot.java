@@ -145,11 +145,6 @@ public class KompjoeWarlightBot implements Bot
 
 	private void attack(ArrayList<AttackTransferMove> attackTransferMoves, String myName, String opponentName, Region fromRegion, Region toRegion)
 	{
-		//if (fromRegion.isNextToOpponent() && !toRegion.ownedByPlayer(opponentName))
-		//{
-		//	return; // Ignore stupid choices!
-		//}
-
 		int attackArmies = getAvailableArmies(fromRegion, myName);
 		if (attackArmies > (toRegion.getArmies() * 3)+6)
 		{
@@ -193,16 +188,6 @@ public class KompjoeWarlightBot implements Bot
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions();
 		boolean opponentVisible = false;
 
-		if (previousStrategy == currentStrategy)
-		{
-			strategyMoveCounter++;
-		}
-		else
-		{
-			strategyMoveCounter = 1;
-		}
-		previousStrategy = currentStrategy;
-
 		// Build list of owned Regions and one with owned Regions next to opponent
 		ArrayList<Region> ownedRegions = new ArrayList<Region>();
 		ArrayList<Region> ownedRegionsNextToOpponent = new ArrayList<Region>();
@@ -239,6 +224,17 @@ public class KompjoeWarlightBot implements Bot
 		Collections.sort(ownedRegionsNextToOpponent, compareArmies);
 		Collections.sort(ownedRegionsNextToNobody, compareArmiesDescending);
 
+		if (previousStrategy == currentStrategy)
+		{
+			strategyMoveCounter++;
+		}
+		else
+		{
+			strategyMoveCounter = 1;
+		}
+		previousStrategy = currentStrategy;
+
+		superRegionGet = null;
 		if ((state.getRoundNumber() <= 5 && opponentVisible) ||
 			opponentVisible && strategyMoveCounter >= 5 && currentStrategy != Strategy.AGRO_MODE ||
 			state.getRoundNumber() >= 60)
@@ -248,7 +244,6 @@ public class KompjoeWarlightBot implements Bot
 		else
 		{
 			currentStrategy = Strategy.DEFAULT;
-			superRegionGet = null;
 			for ( SuperRegion superRegion : preferredSuperRegions.subList(0,3) )
 			{
 				if (superRegion.ownedByPlayer() != myName)
@@ -385,10 +380,10 @@ public class KompjoeWarlightBot implements Bot
 
 		boolean opponentIsVisible = false;
 
-		if (state.getRoundNumber() >= 65)
-		{
-			boolean debugMe = true;
-		}
+		//if (state.getRoundNumber() >= 43)
+		//{
+		//	boolean debugMe = true;
+		//}
 
 		//// First lets find the region with the most armies
 		//int mostArmies = 0;
@@ -441,7 +436,7 @@ public class KompjoeWarlightBot implements Bot
 					threadCount += neighbor.getArmies();
 				}
 			}
-			if (threadCount >= fromRegion.getArmies() - 3 && currentStrategy != Strategy.AGRO_MODE)
+			if (threadCount > 0 && threadCount >= fromRegion.getArmies() - 3 && currentStrategy != Strategy.AGRO_MODE)
 			{
 				// fromRegion is defending :-)
 				regionsThatDidStuff.add(fromRegion);
@@ -458,7 +453,7 @@ public class KompjoeWarlightBot implements Bot
 
 			if (toMuchArmies)
 			{
-				if (fromRegion.getSuperRegion().ownedByPlayer() == null || fromRegion.getSuperRegion().ownedByPlayer() != myName)
+				if (fromRegion.getSuperRegion().ownedByPlayer() == null && !fromRegion.isNextToOpponent() && currentStrategy != Strategy.AGRO_MODE)
 				{
 					// This SuperRegion is not owned by me yet!
 
@@ -484,7 +479,7 @@ public class KompjoeWarlightBot implements Bot
 							foundPath = true;
 							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
 							regionsThatDidStuff.add( fromRegion );
-							regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
+							//regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
 							break;
 						}
 
@@ -524,7 +519,7 @@ public class KompjoeWarlightBot implements Bot
 										foundPath = true;
 										attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
 										regionsThatDidStuff.add( fromRegion );
-										regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
+										//regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
 										break;
 									}
 									if (!regionsVisited.contains(endRegionNeighbor))
@@ -548,81 +543,161 @@ public class KompjoeWarlightBot implements Bot
 				}
 				else
 				{
-					// Find nearest opponent
-					boolean foundPath = false;
-					ArrayList<Region> regionsVisited = new ArrayList<Region>();
-					// Start Region, End Regions
-					HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
+					if (opponentIsVisible)
+					{
+						// Find nearest opponent
+						boolean foundPath = false;
+						ArrayList<Region> regionsVisited = new ArrayList<Region>();
+						// Start Region, End Regions
+						HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
 
-					// Cannot go via myself
-					regionsVisited.add(fromRegion);
-					// Visit neighbors to ensure the shortest route
-					for (Region neighbor : fromRegion.getNeighbors())
-					{
-						regionsVisited.add( neighbor );
-					}
-					// Set-up starting paths
-					for (Region neighbor : fromRegion.getNeighbors())
-					{
-						if (neighbor.ownedByPlayer(opponentName) || (!opponentIsVisible && !neighbor.ownedByPlayer(myName)))
+						// Cannot go via myself
+						regionsVisited.add(fromRegion);
+						// Visit neighbors to ensure the shortest route
+						for (Region neighbor : fromRegion.getNeighbors())
 						{
-							// Found opponent!
-							regionsThatDidStuff.add( neighbor );
-							foundPath = true;
-							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
-							regionsThatDidStuff.add( fromRegion );
-							regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
-							break;
+							regionsVisited.add( neighbor );
 						}
-
-						ArrayList<Region> endRegions = new ArrayList<Region>();
-						for (Region neighborNeighbor : neighbor.getNeighbors())
+						// Set-up starting paths
+						for (Region neighbor : fromRegion.getNeighbors())
 						{
-							if (!regionsVisited.contains(neighborNeighbor))
+							if (neighbor.ownedByPlayer(opponentName) || (!opponentIsVisible && !neighbor.ownedByPlayer(myName)))
 							{
-								endRegions.add( neighborNeighbor );
-								regionsVisited.add( neighborNeighbor );
+								// Found opponent!
+								foundPath = true;
+								attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
+								regionsThatDidStuff.add( fromRegion );
+								//regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
+								break;
 							}
+
+							ArrayList<Region> endRegions = new ArrayList<Region>();
+							for (Region neighborNeighbor : neighbor.getNeighbors())
+							{
+								if (!regionsVisited.contains(neighborNeighbor))
+								{
+									endRegions.add( neighborNeighbor );
+									regionsVisited.add( neighborNeighbor );
+								}
+							}
+
+							// add startRegion to go from, with all its neighbors that we visited.
+							paths.put(neighbor, endRegions);
 						}
 
-						// add startRegion to go from, with all its neighbors that we visited.
-						paths.put(neighbor, endRegions);
-					}
-
-					boolean newRegionsVisited = true;
-					// This search will "fan-out" until it finds an enemy or all regions are visited
-					while( !foundPath && newRegionsVisited )
-					{
-						newRegionsVisited = false;
-						for( Region startRegion : paths.keySet() )
+						boolean newRegionsVisited = true;
+						// This search will "fan-out" until it finds an enemy or all regions are visited
+						while( !foundPath && newRegionsVisited )
 						{
-							ArrayList<Region> newEndRegions = new ArrayList<Region>();
-							for ( Region endRegion : paths.get(startRegion) )
+							newRegionsVisited = false;
+							for( Region startRegion : paths.keySet() )
 							{
-								for (Region endRegionNeighbor : endRegion.getNeighbors())
+								ArrayList<Region> newEndRegions = new ArrayList<Region>();
+								for ( Region endRegion : paths.get(startRegion) )
 								{
-									if (endRegionNeighbor.ownedByPlayer(opponentName) || (!opponentIsVisible && !endRegionNeighbor.ownedByPlayer(myName)))
+									for (Region endRegionNeighbor : endRegion.getNeighbors())
 									{
-										// Found opponent!
-										regionsThatDidStuff.add( startRegion );
-										foundPath = true;
-										attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
-										regionsThatDidStuff.add( fromRegion );
-										regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
-										break;
+										if (endRegionNeighbor.ownedByPlayer(opponentName) || (!opponentIsVisible && !endRegionNeighbor.ownedByPlayer(myName)))
+										{
+											// Found opponent!
+											foundPath = true;
+											attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
+											regionsThatDidStuff.add( fromRegion );
+											//regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
+											break;
+										}
+										if (!regionsVisited.contains(endRegionNeighbor))
+										{
+											newEndRegions.add( endRegionNeighbor );
+											regionsVisited.add( endRegionNeighbor );
+											newRegionsVisited = true;
+										}
 									}
-									if (!regionsVisited.contains(endRegionNeighbor))
-									{
-										newEndRegions.add( endRegionNeighbor );
-										regionsVisited.add( endRegionNeighbor );
-										newRegionsVisited = true;
-									}
+									if (foundPath) { break; }
 								}
 								if (foundPath) { break; }
+								// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
+								paths.put(startRegion, newEndRegions);
 							}
-							if (foundPath) { break; }
-							// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
-							paths.put(startRegion, newEndRegions);
+						}
+					}
+					else
+					{
+						// No opponent visible, but we have the entire super region
+						// Find nearest region not owned by me, inside the same SuperRegion
+						boolean foundPath = false;
+						ArrayList<Region> regionsVisited = new ArrayList<Region>();
+						// Start Region, End Regions
+						HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
+
+						// Cannot go via myself
+						regionsVisited.add(fromRegion);
+						// Visit neighbors to ensure the shortest route
+						for (Region neighbor : fromRegion.getNeighbors())
+						{
+							regionsVisited.add( neighbor );
+						}
+						// Set-up starting paths
+						for (Region neighbor : fromRegion.getNeighbors())
+						{
+							if (!neighbor.ownedByPlayer(myName))
+							{
+								// Found target!
+								foundPath = true;
+								attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
+								regionsThatDidStuff.add( fromRegion );
+								//regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
+								break;
+							}
+
+							ArrayList<Region> endRegions = new ArrayList<Region>();
+							for (Region neighborNeighbor : neighbor.getNeighbors())
+							{
+								if (!regionsVisited.contains(neighborNeighbor))
+								{
+									endRegions.add( neighborNeighbor );
+									regionsVisited.add( neighborNeighbor );
+								}
+							}
+
+							// add startRegion to go from, with all its neighbors that we visited.
+							paths.put(neighbor, endRegions);
+						}
+
+						boolean newRegionsVisited = true;
+						// This search will "fan-out" until it finds an enemy or all regions are visited
+						while( !foundPath && newRegionsVisited )
+						{
+							newRegionsVisited = false;
+							for( Region startRegion : paths.keySet() )
+							{
+								ArrayList<Region> newEndRegions = new ArrayList<Region>();
+								for ( Region endRegion : paths.get(startRegion) )
+								{
+									for (Region endRegionNeighbor : endRegion.getNeighbors())
+									{
+										if (!endRegionNeighbor.ownedByPlayer(myName))
+										{
+											// Found target!
+											foundPath = true;
+											attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
+											regionsThatDidStuff.add( fromRegion );
+											//regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
+											break;
+										}
+										if (!regionsVisited.contains(endRegionNeighbor))
+										{
+											newEndRegions.add( endRegionNeighbor );
+											regionsVisited.add( endRegionNeighbor );
+											newRegionsVisited = true;
+										}
+									}
+									if (foundPath) { break; }
+								}
+								if (foundPath) { break; }
+								// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
+								paths.put(startRegion, newEndRegions);
+							}
 						}
 					}
 				}
