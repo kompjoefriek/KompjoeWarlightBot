@@ -145,6 +145,11 @@ public class KompjoeWarlightBot implements Bot
 
 	private void attack(ArrayList<AttackTransferMove> attackTransferMoves, String myName, String opponentName, Region fromRegion, Region toRegion)
 	{
+		if (fromRegion.isNextToOpponent() && !toRegion.ownedByPlayer(opponentName))
+		{
+			return; // Ignore stupid choices!
+		}
+
 		int attackArmies = getAvailableArmies(fromRegion, myName);
 		if (attackArmies > (toRegion.getArmies() * 3)+6)
 		{
@@ -457,13 +462,6 @@ public class KompjoeWarlightBot implements Bot
 				{
 					// This SuperRegion is not owned by me yet!
 
-					if (fromRegion.isNextToOpponent())
-					{
-						// Guard!
-						regionsThatDidStuff.add( fromRegion );
-						continue;
-					}
-
 					// Find nearest region not owned by me, inside the same SuperRegion
 					boolean foundPath = false;
 					ArrayList<Region> regionsVisited = new ArrayList<Region>();
@@ -483,9 +481,10 @@ public class KompjoeWarlightBot implements Bot
 						if (neighbor.getSuperRegion() == fromRegion.getSuperRegion() && !neighbor.ownedByPlayer(myName))
 						{
 							// Found target!
-							regionsThatDidStuff.add( neighbor );
 							foundPath = true;
 							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
+							regionsThatDidStuff.add( fromRegion );
+							regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
 							break;
 						}
 
