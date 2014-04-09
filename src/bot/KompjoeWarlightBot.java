@@ -145,10 +145,10 @@ public class KompjoeWarlightBot implements Bot
 
 	private void attack(ArrayList<AttackTransferMove> attackTransferMoves, String myName, String opponentName, Region fromRegion, Region toRegion)
 	{
-		if (fromRegion.isNextToOpponent() && !toRegion.ownedByPlayer(opponentName))
-		{
-			return; // Ignore stupid choices!
-		}
+		//if (fromRegion.isNextToOpponent() && !toRegion.ownedByPlayer(opponentName))
+		//{
+		//	return; // Ignore stupid choices!
+		//}
 
 		int attackArmies = getAvailableArmies(fromRegion, myName);
 		if (attackArmies > (toRegion.getArmies() * 3)+6)
@@ -385,10 +385,10 @@ public class KompjoeWarlightBot implements Bot
 
 		boolean opponentIsVisible = false;
 
-		//if (state.getRoundNumber() >= 16)
-		//{
-		//	boolean debugMe = true;
-		//}
+		if (state.getRoundNumber() >= 65)
+		{
+			boolean debugMe = true;
+		}
 
 		//// First lets find the region with the most armies
 		//int mostArmies = 0;
@@ -458,7 +458,7 @@ public class KompjoeWarlightBot implements Bot
 
 			if (toMuchArmies)
 			{
-				if (fromRegion.getSuperRegion().ownedByPlayer() != myName)
+				if (fromRegion.getSuperRegion().ownedByPlayer() == null || fromRegion.getSuperRegion().ownedByPlayer() != myName)
 				{
 					// This SuperRegion is not owned by me yet!
 
