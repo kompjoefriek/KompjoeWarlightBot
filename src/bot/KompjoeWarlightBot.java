@@ -21,7 +21,6 @@ import main.Region;
 import main.SuperRegion;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
-import sun.print.resources.serviceui;
 
 import java.util.*;
 
@@ -39,8 +38,10 @@ public class KompjoeWarlightBot implements Bot
 	private Comparator<SuperRegion> comparePreferredSuperRegions;
 	private ArrayList<SuperRegion> preferredSuperRegions;
 
-	private Strategy strategy;
+	private Strategy currentStrategy;
+	private Strategy previousStrategy;
 	private SuperRegion superRegionGet; // used with Strategy.CONTINENT_GET
+	private int strategyMoveCounter;
 
 	private int noAttacksCounter;
 
@@ -63,8 +64,11 @@ public class KompjoeWarlightBot implements Bot
 
 		preferredSuperRegions = new ArrayList<SuperRegion>();
 
-		strategy = Strategy.DEFAULT;
+
+		currentStrategy = Strategy.DEFAULT;
+		previousStrategy = Strategy.CONTINENT_GET;
 		superRegionGet = null;
+		strategyMoveCounter = 0;
 		noAttacksCounter = 0;
 	}
 
@@ -184,6 +188,16 @@ public class KompjoeWarlightBot implements Bot
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions();
 		boolean opponentVisible = false;
 
+		if (previousStrategy == currentStrategy)
+		{
+			strategyMoveCounter++;
+		}
+		else
+		{
+			strategyMoveCounter = 1;
+		}
+		previousStrategy = currentStrategy;
+
 		// Build list of owned Regions and one with owned Regions next to opponent
 		ArrayList<Region> ownedRegions = new ArrayList<Region>();
 		ArrayList<Region> ownedRegionsNextToOpponent = new ArrayList<Region>();
@@ -220,19 +234,21 @@ public class KompjoeWarlightBot implements Bot
 		Collections.sort(ownedRegionsNextToOpponent, compareArmies);
 		Collections.sort(ownedRegionsNextToNobody, compareArmiesDescending);
 
-		if ((state.getRoundNumber() <= 5 && opponentVisible) ||  state.getRoundNumber() >= 50)
+		if ((state.getRoundNumber() <= 5 && opponentVisible) ||
+			opponentVisible && strategyMoveCounter >= 5 && currentStrategy != Strategy.AGRO_MODE ||
+			state.getRoundNumber() >= 60)
 		{
-			strategy = Strategy.AGRO_MODE;
+			currentStrategy = Strategy.AGRO_MODE;
 		}
 		else
 		{
-			strategy = Strategy.DEFAULT;
+			currentStrategy = Strategy.DEFAULT;
 			superRegionGet = null;
 			for ( SuperRegion superRegion : preferredSuperRegions.subList(0,3) )
 			{
 				if (superRegion.ownedByPlayer() != myName)
 				{
-					strategy = Strategy.CONTINENT_GET;
+					currentStrategy = Strategy.CONTINENT_GET;
 					superRegionGet = superRegion;
 
 					boolean someOwnedByMe = false;
@@ -254,7 +270,7 @@ public class KompjoeWarlightBot implements Bot
 			}
 		}
 
-		if (strategy == Strategy.AGRO_MODE)
+		if (currentStrategy == Strategy.AGRO_MODE)
 		{
 			if (ownedRegionsNextToOpponent.size() > 0)
 			{
@@ -264,7 +280,7 @@ public class KompjoeWarlightBot implements Bot
 				return placeArmiesMoves;
 			}
 		}
-		else if (strategy == Strategy.CONTINENT_GET && superRegionGet != null)
+		else if (currentStrategy == Strategy.CONTINENT_GET && superRegionGet != null)
 		{
 			// Find regions in this superRegion we can take-over
 			ArrayList<Region> regionsToTakeOver = new ArrayList<Region>();
@@ -364,6 +380,11 @@ public class KompjoeWarlightBot implements Bot
 
 		boolean opponentIsVisible = false;
 
+		//if (state.getRoundNumber() >= 16)
+		//{
+		//	boolean debugMe = true;
+		//}
+
 		//// First lets find the region with the most armies
 		//int mostArmies = 0;
 		//Region ownedRegionWithMostArmies = null;
@@ -415,7 +436,7 @@ public class KompjoeWarlightBot implements Bot
 					threadCount += neighbor.getArmies();
 				}
 			}
-			if (threadCount >= fromRegion.getArmies() - 3 && strategy != Strategy.AGRO_MODE)
+			if (threadCount >= fromRegion.getArmies() - 3 && currentStrategy != Strategy.AGRO_MODE)
 			{
 				// fromRegion is defending :-)
 				regionsThatDidStuff.add(fromRegion);
@@ -432,9 +453,16 @@ public class KompjoeWarlightBot implements Bot
 
 			if (toMuchArmies)
 			{
-				if (fromRegion.getSuperRegion().ownedByPlayer() == null)
+				if (fromRegion.getSuperRegion().ownedByPlayer() != myName)
 				{
 					// This SuperRegion is not owned by me yet!
+
+					if (fromRegion.isNextToOpponent())
+					{
+						// Guard!
+						regionsThatDidStuff.add( fromRegion );
+						continue;
+					}
 
 					// Find nearest region not owned by me, inside the same SuperRegion
 					boolean foundPath = false;
@@ -494,9 +522,10 @@ public class KompjoeWarlightBot implements Bot
 									if (endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion() && !endRegionNeighbor.ownedByPlayer(myName))
 									{
 										// Found target!
-										regionsThatDidStuff.add( startRegion );
 										foundPath = true;
 										attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
+										regionsThatDidStuff.add( fromRegion );
+										regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
 										break;
 									}
 									if (!regionsVisited.contains(endRegionNeighbor))
@@ -542,6 +571,8 @@ public class KompjoeWarlightBot implements Bot
 							regionsThatDidStuff.add( neighbor );
 							foundPath = true;
 							attack(attackTransferMoves, myName, opponentName, fromRegion, neighbor);
+							regionsThatDidStuff.add( fromRegion );
+							regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
 							break;
 						}
 
@@ -577,6 +608,8 @@ public class KompjoeWarlightBot implements Bot
 										regionsThatDidStuff.add( startRegion );
 										foundPath = true;
 										attack(attackTransferMoves, myName, opponentName, fromRegion, startRegion);
+										regionsThatDidStuff.add( fromRegion );
+										regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
 										break;
 									}
 									if (!regionsVisited.contains(endRegionNeighbor))
