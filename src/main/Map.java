@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 public class Map
 {
-	public LinkedList<Region> regions;
-	public LinkedList<SuperRegion> superRegions;
+	private LinkedList<Region> m_regions;
+	private LinkedList<SuperRegion> m_superRegions;
 
 	public Map()
 	{
@@ -14,8 +14,8 @@ public class Map
 
 	public Map(LinkedList<Region> regions, LinkedList<SuperRegion> superRegions)
 	{
-		this.regions = regions;
-		this.superRegions = superRegions;
+		m_regions = regions;
+		m_superRegions = superRegions;
 	}
 
 	/**
@@ -25,7 +25,7 @@ public class Map
 	 */
 	public void add(Region region)
 	{
-		for (Region r : regions)
+		for (Region r : m_regions)
 		{
 			if (r.getId() == region.getId())
 			{
@@ -33,7 +33,7 @@ public class Map
 				return;
 			}
 		}
-		regions.add(region);
+		m_regions.add(region);
 	}
 
 	/**
@@ -43,13 +43,15 @@ public class Map
 	 */
 	public void add(SuperRegion superRegion)
 	{
-		for (SuperRegion s : superRegions)
+		for (SuperRegion s : m_superRegions)
+		{
 			if (s.getId() == superRegion.getId())
 			{
 				System.err.println("SuperRegion cannot be added: id already exists.");
 				return;
 			}
-		superRegions.add(superRegion);
+		}
+		m_superRegions.add(superRegion);
 	}
 
 	/**
@@ -58,22 +60,23 @@ public class Map
 	public Map getMapCopy()
 	{
 		Map newMap = new Map();
-		for (SuperRegion sr : superRegions) //copy superRegions
+		for (SuperRegion sr : m_superRegions) // Copy m_superRegions
 		{
 			SuperRegion newSuperRegion = new SuperRegion(sr.getId(), sr.getArmiesReward());
 			newMap.add(newSuperRegion);
 		}
-		for (Region r : regions) //copy regions
+		for (Region r : m_regions) // Copy regions
 		{
-			Region newRegion = new Region(r.getId(), newMap.getSuperRegion(r.getSuperRegion().getId()),
-				r.getPlayerName(), r.getArmies());
+			Region newRegion = new Region(r.getId(), newMap.getSuperRegion(r.getSuperRegion().getId()), r.getPlayerName(), r.getArmies());
 			newMap.add(newRegion);
 		}
-		for (Region r : regions) //add neighbors to copied regions
+		for (Region r : m_regions) // Add neighbors to copied regions
 		{
 			Region newRegion = newMap.getRegion(r.getId());
 			for (Region neighbor : r.getNeighbors())
+			{
 				newRegion.addNeighbor(newMap.getRegion(neighbor.getId()));
+			}
 		}
 		return newMap;
 	}
@@ -83,7 +86,7 @@ public class Map
 	 */
 	public LinkedList<Region> getRegions()
 	{
-		return regions;
+		return m_regions;
 	}
 
 	/**
@@ -91,7 +94,7 @@ public class Map
 	 */
 	public LinkedList<SuperRegion> getSuperRegions()
 	{
-		return superRegions;
+		return m_superRegions;
 	}
 
 	/**
@@ -100,8 +103,10 @@ public class Map
 	 */
 	public Region getRegion(int id)
 	{
-		for (Region region : regions)
-			if (region.getId() == id) return region;
+		for (Region region : m_regions)
+		{
+			if (region.getId() == id) { return region; }
+		}
 		return null;
 	}
 
@@ -111,19 +116,25 @@ public class Map
 	 */
 	public SuperRegion getSuperRegion(int id)
 	{
-		for (SuperRegion superRegion : superRegions)
-			if (superRegion.getId() == id) return superRegion;
+		for (SuperRegion superRegion : m_superRegions)
+		{
+			if (superRegion.getId() == id) { return superRegion; }
+		}
 		return null;
 	}
 
-	public String getMapString()
+	public String toString()
 	{
-		String mapString = "";
-		for (Region region : regions)
+		String mapString = "Map [";
+		for (Region region : m_regions)
 		{
-			mapString = mapString
-				.concat(region.getId() + ";" + region.getPlayerName() + ";" + region.getArmies() + " ");
+			mapString = mapString.concat(region.toString());
+			if (m_regions.getLast() != region)
+			{
+				mapString = mapString.concat(","+System.lineSeparator());
+			}
 		}
+		mapString.concat("]");
 		return mapString;
 	}
 }

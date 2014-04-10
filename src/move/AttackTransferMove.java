@@ -4,30 +4,30 @@ import main.Region;
 
 /**
  * This Move is used in the second part of each round. It represents the attack or transfer of armies from
- * fromRegion to toRegion. If toRegion is owned by the player himself, it's a transfer. If toRegion is
+ * m_fromRegion to m_toRegion. If m_toRegion is owned by the player himself, it's a transfer. If m_toRegion is
  * owned by the opponent, this Move is an attack.
  */
 
 public class AttackTransferMove extends Move
 {
-	private Region fromRegion;
-	private Region toRegion;
-	private int armies;
+	private Region m_fromRegion;
+	private Region m_toRegion;
+	private int m_armies;
 
 	public AttackTransferMove(String playerName, Region fromRegion, Region toRegion, int armies)
 	{
 		super.setPlayerName(playerName);
-		this.fromRegion = fromRegion;
-		this.toRegion = toRegion;
-		this.armies = armies;
+		m_fromRegion = fromRegion;
+		m_toRegion = toRegion;
+		m_armies = armies;
 	}
 
 	/**
-	 * @param n Sets the number of armies of this Move
+	 * @param armies Sets the number of armies of this Move
 	 */
-	public void setArmies(int n)
+	public void setArmies(int armies)
 	{
-		armies = n;
+		m_armies = armies;
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class AttackTransferMove extends Move
 	 */
 	public Region getFromRegion()
 	{
-		return fromRegion;
+		return m_fromRegion;
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class AttackTransferMove extends Move
 	 */
 	public Region getToRegion()
 	{
-		return toRegion;
+		return m_toRegion;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class AttackTransferMove extends Move
 	 */
 	public int getArmies()
 	{
-		return armies;
+		return m_armies;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class AttackTransferMove extends Move
 	{
 		if (getIllegalMove().equals(""))
 		{
-			return getPlayerName() + " attack/transfer " + fromRegion.getId() + " " + toRegion.getId() + " " + armies;
+			return getPlayerName() + " attack/transfer " + m_fromRegion.getId() + " " + m_toRegion.getId() + " " + m_armies;
 		}
 		else
 		{

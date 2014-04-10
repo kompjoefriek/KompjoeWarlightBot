@@ -4,35 +4,35 @@ import main.Region;
 
 /**
  * This Move is used in the first part of each round. It represents what Region is increased
- * with how many armies.
+ * with how many m_armies.
  */
 
 public class PlaceArmiesMove extends Move
 {
-	private Region region;
-	private int armies;
+	private Region m_region;
+	private int m_armies;
 
 	public PlaceArmiesMove(String playerName, Region region, int armies)
 	{
 		super.setPlayerName(playerName);
-		this.region = region;
-		this.armies = armies;
+		m_region = region;
+		m_armies = armies;
 	}
 
 	/**
-	 * @param n Sets the number of armies this move will place on a Region
+	 * @param armies Sets the number of armies this move will place on a Region
 	 */
-	public void setArmies(int n)
+	public void setArmies(int armies)
 	{
-		armies = n;
+		m_armies = armies;
 	}
 
 	/**
-	 * @return The Region this Move will be placing armies on
+	 * @return The Region this Move will be placing m_armies on
 	 */
 	public Region getRegion()
 	{
-		return region;
+		return m_region;
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class PlaceArmiesMove extends Move
 	 */
 	public int getArmies()
 	{
-		return armies;
+		return m_armies;
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class PlaceArmiesMove extends Move
 	{
 		if (getIllegalMove().equals(""))
 		{
-			return getPlayerName() + " place_armies " + region.getId() + " " + armies;
+			return getPlayerName() + " place_armies " + m_region.getId() + " " + m_armies;
 		}
 		else
 		{

@@ -2,15 +2,15 @@ package move;
 
 public class Move
 {
-	private String playerName; //name of the player that did this move
-	private String illegalMove = ""; //gets the value of the error message if move is illegal, else remains empty
+	private String m_playerName; // Name of the player that did this move
+	private String m_illegalMove = ""; // Gets the value of the error message if move is illegal, else remains empty
 
 	/**
 	 * @param playerName Sets the name of the Player that this Move belongs to
 	 */
 	public void setPlayerName(String playerName)
 	{
-		this.playerName = playerName;
+		m_playerName = playerName;
 	}
 
 	/**
@@ -18,7 +18,7 @@ public class Move
 	 */
 	public void setIllegalMove(String illegalMove)
 	{
-		this.illegalMove = illegalMove;
+		m_illegalMove = illegalMove;
 	}
 
 	/**
@@ -26,7 +26,7 @@ public class Move
 	 */
 	public String getPlayerName()
 	{
-		return playerName;
+		return m_playerName;
 	}
 
 	/**
@@ -34,6 +34,6 @@ public class Move
 	 */
 	public String getIllegalMove()
 	{
-		return illegalMove;
+		return m_illegalMove;
 	}
 }

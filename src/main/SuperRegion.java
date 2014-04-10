@@ -7,24 +7,24 @@ public class SuperRegion
 	public static final int MIN_GUARD_BORDER_REGION = 1; // Use this to enable guarding
 	public static final int MIN_GUARD_REGION = 1;
 
-	private int id;
-	private int armiesReward;
-	private LinkedList<Region> subRegions;
-	private LinkedList<Region> borderRegions;
-	private boolean fullyGuarded;
+	private int m_id;
+	private int m_armiesReward;
+	private LinkedList<Region> m_subRegions;
+	private LinkedList<Region> m_borderRegions;
+	private boolean m_fullyGuarded;
 
 	public SuperRegion(int id, int armiesReward)
 	{
-		this.id = id;
-		this.armiesReward = armiesReward;
-		subRegions = new LinkedList<Region>();
-		borderRegions = new LinkedList<Region>();
-		fullyGuarded = false;
+		m_id = id;
+		m_armiesReward = armiesReward;
+		m_subRegions = new LinkedList<Region>();
+		m_borderRegions = new LinkedList<Region>();
+		m_fullyGuarded = false;
 	}
 
 	public void addSubRegion(Region subRegion)
 	{
-		if (!subRegions.contains(subRegion)) { subRegions.add(subRegion); }
+		if (!m_subRegions.contains(subRegion)) { m_subRegions.add(subRegion); }
 	}
 
 	/**
@@ -32,10 +32,10 @@ public class SuperRegion
 	 */
 	public String ownedByPlayer()
 	{
-		String playerName = subRegions.getFirst().getPlayerName();
-		for (Region region : subRegions)
+		String playerName = m_subRegions.getFirst().getPlayerName();
+		for (Region region : m_subRegions)
 		{
-			if (!playerName.equals(region.getPlayerName())) return null;
+			if (!playerName.equals(region.getPlayerName())) { return null; }
 		}
 		return playerName;
 	}
@@ -45,7 +45,7 @@ public class SuperRegion
 	 */
 	public int getId()
 	{
-		return id;
+		return m_id;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class SuperRegion
 	 */
 	public int getArmiesReward()
 	{
-		return armiesReward;
+		return m_armiesReward;
 	}
 
 	/**
@@ -61,25 +61,25 @@ public class SuperRegion
 	 */
 	public LinkedList<Region> getSubRegions()
 	{
-		return subRegions;
+		return m_subRegions;
 	}
 
 	public void updateFullyGuarded()
 	{
-		fullyGuarded = false;
+		m_fullyGuarded = false;
 		if (ownedByPlayer() != null)
 		{
 			// All sub regions are owned by one player
-			fullyGuarded = true;
-			for (Region region : subRegions)
+			m_fullyGuarded = true;
+			for (Region region : m_subRegions)
 			{
 				if (region.getNeighborSuperRegions().size() > 0)
 				{
-					if (region.getArmies() < MIN_GUARD_BORDER_REGION) { fullyGuarded = false; }
+					if (region.getArmies() < MIN_GUARD_BORDER_REGION) { m_fullyGuarded = false; }
 				}
 				else
 				{
-					if (region.getArmies() < MIN_GUARD_REGION) { fullyGuarded = false; }
+					if (region.getArmies() < MIN_GUARD_REGION) { m_fullyGuarded = false; }
 				}
 			}
 		}
@@ -87,7 +87,7 @@ public class SuperRegion
 
 	public boolean getFullyGuarded()
 	{
-		return fullyGuarded;
+		return m_fullyGuarded;
 	}
 
 	/**
@@ -95,33 +95,33 @@ public class SuperRegion
 	 */
 	public LinkedList<Region> getBorderRegions()
 	{
-		return borderRegions;
+		return m_borderRegions;
 	}
 
 
 	public void addBorderRegion(Region region)
 	{
-		if (!borderRegions.contains(region)) { borderRegions.add(region); }
+		if (!m_borderRegions.contains(region)) { m_borderRegions.add(region); }
 	}
 
 
 	public int comparePreferredTo(SuperRegion compareSuperRegion)
 	{
 		// Exception for australia (http://webtrax.hu/myfacewhen/faces/lineart-memes/nothing-to-do-here-jet-pack-guy.jpg)
-		if (this.getBorderRegions().size() == 1) { return 1; }
+		if (getBorderRegions().size() == 1) { return 1; }
 		if (compareSuperRegion.getBorderRegions().size() == 1) { return -1; }
 		// Smaller super regions are preferred
-		if (this.getSubRegions().size() != compareSuperRegion.getSubRegions().size())
+		if (getSubRegions().size() != compareSuperRegion.getSubRegions().size())
 		{
-			return this.getSubRegions().size() - compareSuperRegion.getSubRegions().size();
+			return getSubRegions().size() - compareSuperRegion.getSubRegions().size();
 		}
 		// Less border regions are preferred
-		if (this.getBorderRegions().size() != compareSuperRegion.getBorderRegions().size())
+		if (getBorderRegions().size() != compareSuperRegion.getBorderRegions().size())
 		{
-			return this.getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
+			return getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
 		}
 
 		// More award is preferred, so i turned them around here :-)
-		return compareSuperRegion.getArmiesReward() - this.getArmiesReward();
+		return compareSuperRegion.getArmiesReward() - getArmiesReward();
 	}
 }

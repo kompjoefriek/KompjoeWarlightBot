@@ -10,17 +10,16 @@ import java.util.Scanner;
 
 public class BotParser
 {
-	final Scanner scan;
+	private final Scanner m_scan;
+	private final Bot m_bot;
+	private BotState m_currentState;
 
-	final Bot bot;
-
-	BotState currentState;
 
 	public BotParser(Bot bot)
 	{
-		this.scan = new Scanner(System.in);
-		this.bot = bot;
-		this.currentState = new BotState();
+		m_scan = new Scanner(System.in);
+		m_bot = bot;
+		m_currentState = new BotState();
 	}
 
 
@@ -36,40 +35,41 @@ public class BotParser
 		{
 			scanner = new Scanner(System.in);
 		}
-		this.scan = scanner;
-		this.bot = bot;
-		this.currentState = new BotState();
+		m_scan = scanner;
+		m_bot = bot;
+		m_currentState = new BotState();
+		m_currentState.setDebugMode();
 	}
 
 
 	public void run()
 	{
-		while (scan.hasNextLine())
+		while (m_scan.hasNextLine())
 		{
-			String line = scan.nextLine().trim();
+			String line = m_scan.nextLine().trim();
 			if (line.length() == 0) { continue; }
 			String[] parts = line.split(" ");
 			if (parts[0].equals("pick_starting_regions"))
 			{
 				//pick which regions you want to start with
-				currentState.setPickableStartingRegions(parts);
-				ArrayList<Region> preferredStartingRegions = bot
-					.getPreferredStartingRegions(currentState, Long.valueOf(parts[1]));
+				m_currentState.setPickableStartingRegions(parts);
+				ArrayList<Region> preferredStartingRegions = m_bot.getPreferredStartingRegions(m_currentState, Long.valueOf(parts[1]));
 				String output = "";
 				for (Region region : preferredStartingRegions)
+				{
 					output = output.concat(region.getId() + " ");
+				}
 
 				System.out.println(output);
 			}
 			else if (parts.length == 3 && parts[0].equals("go"))
 			{
-				//we need to do a move
+				// We need to do a move
 				String output = "";
 				if (parts[1].equals("place_armies"))
 				{
-					//place armies
-					ArrayList<PlaceArmiesMove> placeArmiesMoves = bot.getPlaceArmiesMoves(currentState,
-						Long.valueOf(parts[2]));
+					// Place armies
+					ArrayList<PlaceArmiesMove> placeArmiesMoves = m_bot.getPlaceArmiesMoves(m_currentState, Long.valueOf(parts[2]));
 					for (PlaceArmiesMove move : placeArmiesMoves)
 					{
 						if (output.length() > 0) { output += ","; }
@@ -78,8 +78,8 @@ public class BotParser
 				}
 				else if (parts[1].equals("attack/transfer"))
 				{
-					//attack/transfer
-					ArrayList<AttackTransferMove> attackTransferMoves = bot.getAttackTransferMoves(currentState, Long.valueOf(parts[2]));
+					// Attack/transfer
+					ArrayList<AttackTransferMove> attackTransferMoves = m_bot.getAttackTransferMoves(m_currentState, Long.valueOf(parts[2]));
 					for (AttackTransferMove move : attackTransferMoves)
 					{
 						if (output.length() > 0) { output += ","; }
@@ -91,25 +91,43 @@ public class BotParser
 			}
 			else if (parts.length == 3 && parts[0].equals("settings"))
 			{
-				//update settings
-				currentState.updateSettings(parts[1], parts[2]);
+				// Update settings
+				m_currentState.updateSettings(parts[1], parts[2]);
 			}
 			else if (parts[0].equals("setup_map"))
 			{
-				//initial full map is given
-				currentState.setupMap(parts);
+				// Initial full map is given
+				m_currentState.setupMap(parts);
 			}
 			else if (parts[0].equals("update_map"))
 			{
-				//all visible regions are given
-				currentState.updateMap(parts);
+				// All visible regions are given
+				m_currentState.updateMap(parts);
 			}
 			else if (parts[0].equals("opponent_moves"))
 			{
-				//all visible opponent moves are given
-				currentState.readOpponentMoves(parts);
+				// All visible opponent moves are given
+				m_currentState.readOpponentMoves(parts);
 			}
-			else if (parts[0].equals("debug_line"))
+			else if (parts[0].equals("debug_line") && m_currentState.isDebugMode())
+			{
+				System.out.println("DB: "+line);
+			}
+			else if (parts[0].equals("Round") && m_currentState.isDebugMode())
+			{
+				System.out.println(m_currentState.getVisibleMap().toString());
+
+				System.out.println("DB: " + line + " (internal round " + m_currentState.getRoundNumber() + ")");
+			}
+			else if (parts[0].equals("player1") && m_currentState.isDebugMode())
+			{
+				System.out.println("DB: "+line);
+			}
+			else if (parts[0].equals("player2") && m_currentState.isDebugMode())
+			{
+				System.out.println("DB: "+line);
+			}
+			else if (parts[0].equals("No") && m_currentState.isDebugMode())
 			{
 				System.out.println("DB: "+line);
 			}
