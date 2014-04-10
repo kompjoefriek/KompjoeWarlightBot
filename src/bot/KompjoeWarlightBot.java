@@ -181,8 +181,8 @@ public class KompjoeWarlightBot implements Bot
 		// TODO: try to capture the center of the world (something with neighborSuperRegions > 1)
 
 		m_strategySuperRegionGet = null;
-		if ((state.getRoundNumber() <= 10 && state.isOpponentVisible() && !(m_strategyMoveCounter >= 3 && m_currentStrategy == Strategy.AGRO_MODE)) ||
-			state.isOpponentVisible() && m_strategyMoveCounter >= 3 && m_currentStrategy != Strategy.AGRO_MODE ||
+		if ((state.getRoundNumber() <= 5 && state.isOpponentVisible() && !(m_strategyMoveCounter >= 2 && m_currentStrategy == Strategy.AGRO_MODE)) ||
+			state.isOpponentVisible() && m_strategyMoveCounter >= 5 && m_currentStrategy != Strategy.AGRO_MODE ||
 			state.getRoundNumber() >= 60)
 		{
 			m_currentStrategy = Strategy.AGRO_MODE;
