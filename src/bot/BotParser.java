@@ -51,7 +51,7 @@ public class BotParser
 			String[] parts = line.split(" ");
 			if (parts[0].equals("pick_starting_regions"))
 			{
-				//pick which regions you want to start with
+				// Pick which regions you want to start with
 				m_currentState.setPickableStartingRegions(parts);
 				ArrayList<Region> preferredStartingRegions = m_bot.getPreferredStartingRegions(m_currentState, Long.valueOf(parts[1]));
 				String output = "";

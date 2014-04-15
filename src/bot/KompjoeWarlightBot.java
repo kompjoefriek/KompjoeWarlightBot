@@ -42,6 +42,7 @@ public class KompjoeWarlightBot implements Bot
 
 	private int m_noAttacksCounter;
 
+
 	public KompjoeWarlightBot()
 	{
 		m_preferredSuperRegions = new ArrayList<SuperRegion>();
@@ -813,7 +814,7 @@ public class KompjoeWarlightBot implements Bot
 	}
 
 
-	private static int getAvailableArmies( Region region, String myName )
+	protected static int getAvailableArmies( Region region, String myName )
 	{
 		int attackArmies = region.getArmies()-SuperRegion.MIN_GUARD_REGION;
 		if (region.getNeighborSuperRegions().size() > 0 && region.getSuperRegion().ownedByPlayer() != myName)
@@ -821,6 +822,132 @@ public class KompjoeWarlightBot implements Bot
 			attackArmies = region.getArmies()-SuperRegion.MIN_GUARD_BORDER_REGION;
 		}
 		return attackArmies;
+	}
+
+
+	protected static int SEARCH_FLAG_FIND_OPPONENT = 1;
+	protected static int SEARCH_FLAG_FIND_ANY = 2;
+	protected static int SEARCH_FLAG_FIND_REGION_ID = 4;
+
+	protected static int SEARCH_FLAG_WITHIN_SUPER_REGION = 8;
+
+	protected static Region getPath(Region fromRegion, BotState state, int searchFlags) throws Exception
+	{
+		if ((searchFlags >> 2 & 1) != 0)
+		{
+			throw new FindPathException("Must supply a regionId when using SEARCH_FLAG_FIND_REGION_ID");
+		}
+		return getPath(fromRegion,state,searchFlags,0);
+	}
+
+	protected static Region getPath(Region fromRegion, BotState state, int searchFlags, int regionId) throws Exception
+	{
+		boolean findOpponent = (searchFlags >> 0 & 1) != 0;
+		boolean findAny = (searchFlags >> 1 & 1) != 0;
+		boolean findRegionId = (searchFlags >> 2 & 1) != 0;
+
+		if (!findOpponent && !findAny && !findRegionId) { throw new FindPathException("Must specify one FIND search flag (found none)"); }
+		if ((findOpponent && findAny) || (findOpponent && findRegionId) || (findAny && findRegionId)) { throw new FindPathException("Must specify only one FIND search flag (found multiple)"); }
+
+		boolean flagWithinSuperRegion = (searchFlags >> 3 & 1) != 0;
+
+
+		// Find nearest region not owned by me, inside the same SuperRegion
+		ArrayList<Region> regionsVisited = new ArrayList<Region>();
+		// Start Region, End Regions
+		HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
+
+		// Cannot go via myself
+		regionsVisited.add(fromRegion);
+		// Visit neighbors to ensure the shortest route
+		for (Region neighbor : fromRegion.getNeighbors())
+		{
+			regionsVisited.add( neighbor );
+		}
+		// Set-up starting paths
+		for (Region neighbor : fromRegion.getNeighbors())
+		{
+			if (!flagWithinSuperRegion || neighbor.getSuperRegion() == fromRegion.getSuperRegion())
+			{
+				if (findOpponent && neighbor.ownedByPlayer(state.getOpponentPlayerName()))
+				{
+					return neighbor; // Found target!
+				}
+				if (findAny && !neighbor.ownedByPlayer(state.getMyPlayerName()))
+				{
+					return neighbor; // Found target!
+				}
+				if (findRegionId && neighbor.getId() == regionId)
+				{
+					return neighbor; // Found target!
+				}
+			}
+
+			ArrayList<Region> endRegions = new ArrayList<Region>();
+			for (Region neighborNeighbor : neighbor.getNeighbors())
+			{
+				if (!regionsVisited.contains(neighborNeighbor))
+				{
+					// Stay inside SuperRegion when needed
+					if (!flagWithinSuperRegion || neighborNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
+					{
+						endRegions.add( neighborNeighbor );
+					}
+					regionsVisited.add( neighborNeighbor );
+				}
+			}
+
+			// Add startRegion to go from, with all its neighbors that we visited.
+			paths.put(neighbor, endRegions);
+		}
+
+		boolean newRegionsVisited = true;
+		// This search will "fan-out" until it finds an enemy or all regions are visited
+		while( newRegionsVisited )
+		{
+			newRegionsVisited = false;
+			for( Region startRegion : paths.keySet() )
+			{
+				ArrayList<Region> newEndRegions = new ArrayList<Region>();
+				for ( Region endRegion : paths.get(startRegion) )
+				{
+					for (Region endRegionNeighbor : endRegion.getNeighbors())
+					{
+						if (!flagWithinSuperRegion || endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
+						{
+							if (findOpponent && endRegionNeighbor.ownedByPlayer(state.getOpponentPlayerName()))
+							{
+								return startRegion; // Found target!
+							}
+							if (findAny && !endRegionNeighbor.ownedByPlayer(state.getMyPlayerName()))
+							{
+								return startRegion; // Found target!
+							}
+							if (findRegionId && endRegionNeighbor.getId() == regionId)
+							{
+								return startRegion; // Found target!
+							}
+						}
+
+						if (!regionsVisited.contains(endRegionNeighbor))
+						{
+							// Stay inside SuperRegion when needed
+							if (!flagWithinSuperRegion || endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
+							{
+								newEndRegions.add( endRegionNeighbor );
+							}
+							regionsVisited.add( endRegionNeighbor );
+							newRegionsVisited = true;
+						}
+					}
+				}
+				// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
+				paths.put(startRegion, newEndRegions);
+			}
+		}
+
+		// Not found
+		return null;
 	}
 
 
@@ -836,5 +963,14 @@ public class KompjoeWarlightBot implements Bot
 			parser = new BotParser(new KompjoeWarlightBot());
 		}
 		parser.run();
+	}
+}
+
+
+class FindPathException extends Exception
+{
+	FindPathException(String message)
+	{
+		super(message);
 	}
 }

@@ -165,7 +165,7 @@ public class BotState
 			region.setUpdated(false);
 		}
 
-		for (int i = 1; i < mapInput.length; i++)
+		for (int i = 1; i < mapInput.length; i += 3)
 		{
 			try
 			{
@@ -176,8 +176,6 @@ public class BotState
 				region.setPlayerName(playerName);
 				region.setArmies(armies);
 				region.setUpdated(true);
-
-				i += 2;
 			}
 			catch (Exception e)
 			{
