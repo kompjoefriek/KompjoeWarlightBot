@@ -374,89 +374,21 @@ public class KompjoeWarlightBot implements Bot
 				if (fromRegion.getSuperRegion().ownedByPlayer() == null && !state.getOwnedRegionsNextToOpponent().contains(fromRegion) && m_currentStrategy != Strategy.AGRO_MODE)
 				{
 					// This SuperRegion is not owned by me yet!
-
-					// Find nearest region not owned by me, inside the same SuperRegion
-					boolean foundPath = false;
-					ArrayList<Region> regionsVisited = new ArrayList<Region>();
-					// Start Region, End Regions
-					HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
-
-					// Cannot go via myself
-					regionsVisited.add(fromRegion);
-					// Visit neighbors to ensure the shortest route
-					for (Region neighbor : fromRegion.getNeighbors())
+					try
 					{
-						regionsVisited.add( neighbor );
-					}
-					// Set-up starting paths
-					for (Region neighbor : fromRegion.getNeighbors())
-					{
-						if (neighbor.getSuperRegion() == fromRegion.getSuperRegion() && !neighbor.ownedByPlayer(myName))
+						Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_ANY | SEARCH_FLAG_WITHIN_SUPER_REGION );
+						if (toRegion != null)
 						{
-							// Found target!
-							foundPath = true;
-							attack(attackTransferMoves, state, fromRegion, neighbor);
+							attack(attackTransferMoves, state, fromRegion, toRegion);
 							regionsThatDidStuff.add( fromRegion );
-							//regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
-							break;
 						}
-
-						ArrayList<Region> endRegions = new ArrayList<Region>();
-						for (Region neighborNeighbor : neighbor.getNeighbors())
+						else
 						{
-							if (!regionsVisited.contains(neighborNeighbor))
-							{
-								// Stay inside SuperRegion
-								if (neighborNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
-								{
-									endRegions.add( neighborNeighbor );
-								}
-								regionsVisited.add( neighborNeighbor );
-							}
+							debugLog(state, "getPath did not find anything!");
 						}
-
-						// add startRegion to go from, with all its neighbors that we visited.
-						paths.put(neighbor, endRegions);
 					}
-
-					boolean newRegionsVisited = true;
-					// This search will "fan-out" until it finds an enemy or all regions are visited
-					while( !foundPath && newRegionsVisited )
+					catch(Exception e)
 					{
-						newRegionsVisited = false;
-						for( Region startRegion : paths.keySet() )
-						{
-							ArrayList<Region> newEndRegions = new ArrayList<Region>();
-							for ( Region endRegion : paths.get(startRegion) )
-							{
-								for (Region endRegionNeighbor : endRegion.getNeighbors())
-								{
-									if (endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion() && !endRegionNeighbor.ownedByPlayer(myName))
-									{
-										// Found target!
-										foundPath = true;
-										attack(attackTransferMoves, state, fromRegion, startRegion);
-										regionsThatDidStuff.add( fromRegion );
-										//regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
-										break;
-									}
-									if (!regionsVisited.contains(endRegionNeighbor))
-									{
-										// Stay inside SuperRegion
-										if (endRegionNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
-										{
-											newEndRegions.add( endRegionNeighbor );
-										}
-										regionsVisited.add( endRegionNeighbor );
-										newRegionsVisited = true;
-									}
-								}
-								if (foundPath) { break; }
-							}
-							if (foundPath) { break; }
-							// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
-							paths.put(startRegion, newEndRegions);
-						}
 					}
 				}
 				else
@@ -464,158 +396,41 @@ public class KompjoeWarlightBot implements Bot
 					if (state.isOpponentVisible())
 					{
 						// Find nearest opponent
-						boolean foundPath = false;
-						ArrayList<Region> regionsVisited = new ArrayList<Region>();
-						// Start Region, End Regions
-						HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
-
-						// Cannot go via myself
-						regionsVisited.add(fromRegion);
-						// Visit neighbors to ensure the shortest route
-						for (Region neighbor : fromRegion.getNeighbors())
+						try
 						{
-							regionsVisited.add( neighbor );
-						}
-						// Set-up starting paths
-						for (Region neighbor : fromRegion.getNeighbors())
-						{
-							if (!neighbor.ownedByPlayer(myName))
+							Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_OPPONENT );
+							if (toRegion != null)
 							{
-								// Found opponent!
-								foundPath = true;
-								attack(attackTransferMoves, state, fromRegion, neighbor);
+								attack(attackTransferMoves, state, fromRegion, toRegion);
 								regionsThatDidStuff.add( fromRegion );
-								//regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
-								break;
 							}
-
-							ArrayList<Region> endRegions = new ArrayList<Region>();
-							for (Region neighborNeighbor : neighbor.getNeighbors())
+							else
 							{
-								if (!regionsVisited.contains(neighborNeighbor))
-								{
-									endRegions.add( neighborNeighbor );
-									regionsVisited.add( neighborNeighbor );
-								}
+								debugLog(state, "getPath did not find anything!");
 							}
-
-							// add startRegion to go from, with all its neighbors that we visited.
-							paths.put(neighbor, endRegions);
 						}
-
-						boolean newRegionsVisited = true;
-						// This search will "fan-out" until it finds an enemy or all regions are visited
-						while( !foundPath && newRegionsVisited )
+						catch(Exception e)
 						{
-							newRegionsVisited = false;
-							for( Region startRegion : paths.keySet() )
-							{
-								ArrayList<Region> newEndRegions = new ArrayList<Region>();
-								for ( Region endRegion : paths.get(startRegion) )
-								{
-									for (Region endRegionNeighbor : endRegion.getNeighbors())
-									{
-										if (endRegionNeighbor.ownedByPlayer(opponentName))
-										{
-											// Found opponent!
-											foundPath = true;
-											attack(attackTransferMoves, state, fromRegion, startRegion);
-											regionsThatDidStuff.add( fromRegion );
-											//regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
-											break;
-										}
-										if (!regionsVisited.contains(endRegionNeighbor))
-										{
-											newEndRegions.add( endRegionNeighbor );
-											regionsVisited.add( endRegionNeighbor );
-											newRegionsVisited = true;
-										}
-									}
-									if (foundPath) { break; }
-								}
-								if (foundPath) { break; }
-								// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
-								paths.put(startRegion, newEndRegions);
-							}
 						}
 					}
 					else
 					{
 						// No opponent visible, but we have the entire super region
-						// Find nearest region not owned by me, inside the same SuperRegion
-						boolean foundPath = false;
-						ArrayList<Region> regionsVisited = new ArrayList<Region>();
-						// Start Region, End Regions
-						HashMap<Region,ArrayList<Region>> paths = new HashMap<Region,ArrayList<Region>>();
-
-						// Cannot go via myself
-						regionsVisited.add(fromRegion);
-						// Visit neighbors to ensure the shortest route
-						for (Region neighbor : fromRegion.getNeighbors())
+						try
 						{
-							regionsVisited.add( neighbor );
-						}
-						// Set-up starting paths
-						for (Region neighbor : fromRegion.getNeighbors())
-						{
-							if (!neighbor.ownedByPlayer(myName))
+							Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_REGION_ID, 0 );
+							if (toRegion != null)
 							{
-								// Found target!
-								foundPath = true;
-								attack(attackTransferMoves, state, fromRegion, neighbor);
+								attack(attackTransferMoves, state, fromRegion, toRegion);
 								regionsThatDidStuff.add( fromRegion );
-								//regionsThatDidStuff.add( neighbor ); // Add target to collect more armies
-								break;
 							}
-
-							ArrayList<Region> endRegions = new ArrayList<Region>();
-							for (Region neighborNeighbor : neighbor.getNeighbors())
+							else
 							{
-								if (!regionsVisited.contains(neighborNeighbor))
-								{
-									endRegions.add( neighborNeighbor );
-									regionsVisited.add( neighborNeighbor );
-								}
+								debugLog(state, "getPath did not find anything!");
 							}
-
-							// add startRegion to go from, with all its neighbors that we visited.
-							paths.put(neighbor, endRegions);
 						}
-
-						boolean newRegionsVisited = true;
-						// This search will "fan-out" until it finds an enemy or all regions are visited
-						while( !foundPath && newRegionsVisited )
+						catch(Exception e)
 						{
-							newRegionsVisited = false;
-							for( Region startRegion : paths.keySet() )
-							{
-								ArrayList<Region> newEndRegions = new ArrayList<Region>();
-								for ( Region endRegion : paths.get(startRegion) )
-								{
-									for (Region endRegionNeighbor : endRegion.getNeighbors())
-									{
-										if (!endRegionNeighbor.ownedByPlayer(myName))
-										{
-											// Found target!
-											foundPath = true;
-											attack(attackTransferMoves, state, fromRegion, startRegion);
-											regionsThatDidStuff.add( fromRegion );
-											//regionsThatDidStuff.add( startRegion ); // Add target to collect more armies
-											break;
-										}
-										if (!regionsVisited.contains(endRegionNeighbor))
-										{
-											newEndRegions.add( endRegionNeighbor );
-											regionsVisited.add( endRegionNeighbor );
-											newRegionsVisited = true;
-										}
-									}
-									if (foundPath) { break; }
-								}
-								if (foundPath) { break; }
-								// Overwrite old regions we visited, with the new regions have just visited and start from in the next loop.
-								paths.put(startRegion, newEndRegions);
-							}
 						}
 					}
 				}
@@ -862,11 +677,6 @@ public class KompjoeWarlightBot implements Bot
 		// Visit neighbors to ensure the shortest route
 		for (Region neighbor : fromRegion.getNeighbors())
 		{
-			regionsVisited.add( neighbor );
-		}
-		// Set-up starting paths
-		for (Region neighbor : fromRegion.getNeighbors())
-		{
 			if (!flagWithinSuperRegion || neighbor.getSuperRegion() == fromRegion.getSuperRegion())
 			{
 				if (findOpponent && neighbor.ownedByPlayer(state.getOpponentPlayerName()))
@@ -883,6 +693,11 @@ public class KompjoeWarlightBot implements Bot
 				}
 			}
 
+			regionsVisited.add( neighbor );
+		}
+		// Set-up starting paths
+		for (Region neighbor : fromRegion.getNeighbors())
+		{
 			ArrayList<Region> endRegions = new ArrayList<Region>();
 			for (Region neighborNeighbor : neighbor.getNeighbors())
 			{
@@ -891,6 +706,19 @@ public class KompjoeWarlightBot implements Bot
 					// Stay inside SuperRegion when needed
 					if (!flagWithinSuperRegion || neighborNeighbor.getSuperRegion() == fromRegion.getSuperRegion())
 					{
+						if (findOpponent && neighborNeighbor.ownedByPlayer(state.getOpponentPlayerName()))
+						{
+							return neighbor; // Found target!
+						}
+						if (findAny && !neighborNeighbor.ownedByPlayer(state.getMyPlayerName()))
+						{
+							return neighbor; // Found target!
+						}
+						if (findRegionId && neighborNeighbor.getId() == regionId)
+						{
+							return neighbor; // Found target!
+						}
+
 						endRegions.add( neighborNeighbor );
 					}
 					regionsVisited.add( neighborNeighbor );
@@ -948,6 +776,16 @@ public class KompjoeWarlightBot implements Bot
 
 		// Not found
 		return null;
+	}
+
+
+	protected void debugLog( BotState state, String string )
+	{
+		if (state.isDebugMode())
+		{
+			StackTraceElement userTrace = Thread.currentThread().getStackTrace()[2];
+			System.err.println(string + " " + userTrace.getFileName() + "(" + userTrace.getLineNumber() + ")" );
+		}
 	}
 
 

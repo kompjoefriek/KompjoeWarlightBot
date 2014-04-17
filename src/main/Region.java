@@ -160,13 +160,13 @@ public class Region
 
 	public String toString()
 	{
-		return "\"id\":" +  m_id + "," +
-			"\"name\":" + RegionName.getRegionName(m_id) + "," +
-			"\"owner\":" +  m_playerName + "," +
-			"\"armies\":" +  m_armies + "," +
-			"\"neighbors\":" +  m_neighbors.size() + "," +
-			"\"neighborSuperRegions\":" +  m_neighborSuperRegions.size() + "," +
-			"\"updated\":" +  m_updated;
+		return "id:" +  m_id + "," +
+			"name:" + RegionName.getRegionName(m_id) + "," +
+			"owner:" +  m_playerName + "," +
+			"armies:" +  m_armies + "," +
+			"neighbors:" +  m_neighbors.size() + "," +
+			"neighborSuperRegions:" +  m_neighborSuperRegions.size() + "," +
+			"updated:" +  m_updated;
 	}
 }
 
