@@ -124,4 +124,13 @@ public class SuperRegion
 		// More award is preferred, so i turned them around here :-)
 		return compareSuperRegion.getArmiesReward() - getArmiesReward();
 	}
+
+
+	public String toString()
+	{
+		return "id:" +  m_id + "," +
+			"name:" + RegionName.getName(m_id) + "," +
+			"armiesRewarded:" + m_armiesReward + "," +
+			"fullyGuarded:" +  m_fullyGuarded;
+	}
 }

@@ -154,14 +154,112 @@ public class TestPathFinding
 		Assert.assertTrue("Should have found 9 but found region "+result.getId(), result.getId() == 9);
 	}
 
+	@Test
+	public void testFindRegionIdWithoutId() throws Exception
+	{
+		exception.expect(FindPathException.class);
+
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 8", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID);
+	}
 
 	@Test
-	public void testFindUnknownId() throws Exception
+	public void testFindSameRegionId() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 8", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 8);
+		Assert.assertNull("Should have found nothing", result);
+	}
+
+	@Test
+	public void testFindUnknownRegionId() throws Exception
 	{
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
 		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 999); // Non-existing region id
 		Assert.assertNull("Should have found nothing", result);
+	}
+
+	@Test
+	public void testFindRegionIdWhenNeighbor() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(5); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 5", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 7); // Non-existing region id
+		Assert.assertNotNull("Should have found 7 but found nothing", result);
+		Assert.assertTrue("Should have found 7 but found region " + result.getId(), result.getId() == 7);
+	}
+
+	@Test
+	public void testFindRegionIdWhenNotNeighbor() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(5); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 5", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 1); // Non-existing region id
+		Assert.assertNotNull("Should have found Region 2 or 4 (target = opponent Region 9) but found nothing", result);
+		Assert.assertTrue(
+			"Should have found Region 2 or 4 (target = opponent Region 9) but found region " + result.getId(),
+			result.getId() == 2 || result.getId() == 4);
+	}
+
+	@Test
+	public void testFindSuperRegionIdWithoutId() throws Exception
+	{
+		exception.expect(FindPathException.class);
+
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 8", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID);
+	}
+
+	@Test
+	public void testFindSuperRegionId() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 8", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 999); // Non-existing super region id
+		Assert.assertNull("Should have found nothing", result);
+	}
+
+	@Test
+	public void testFindSuperRegionWhenNeighbor() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(9); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 9", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 2);
+		Assert.assertNotNull("Should have found 10 but found nothing", result);
+		Assert.assertTrue("Should have found 10 but found region "+result.getId(), result.getId()== 10);
+	}
+
+	@Test
+	public void testFindSuperRegionWhenNotNeighbor() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 8", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 2);
+		Assert.assertNotNull("Should have found 9 but found nothing", result);
+		Assert.assertTrue("Should have found 9 but found region "+result.getId(), result.getId()== 9);
+	}
+
+	@Test
+	public void testFindSuperRegionWhenNotSuperNeighbor() throws Exception
+	{
+		setupDefaultMap();
+		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
+		Assert.assertNotNull("Could not find region 8", fromRegion);
+		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 4);
+		Assert.assertNotNull("Should have found 9 but found nothing", result);
+		Assert.assertTrue("Should have found 9 but found region "+result.getId(), result.getId()== 9);
 	}
 }

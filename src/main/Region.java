@@ -161,7 +161,7 @@ public class Region
 	public String toString()
 	{
 		return "id:" +  m_id + "," +
-			"name:" + RegionName.getRegionName(m_id) + "," +
+			"name:" + RegionName.getName(m_id) + "," +
 			"owner:" +  m_playerName + "," +
 			"armies:" +  m_armies + "," +
 			"neighbors:" +  m_neighbors.size() + "," +

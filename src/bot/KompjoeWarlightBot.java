@@ -418,15 +418,23 @@ public class KompjoeWarlightBot implements Bot
 						// No opponent visible, but we have the entire super region
 						try
 						{
-							Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_REGION_ID, 0 );
-							if (toRegion != null)
+							// Find a region in the direction of a SuperRegion we want
+							for (SuperRegion wantedSuperRegion : m_preferredSuperRegions)
 							{
-								attack(attackTransferMoves, state, fromRegion, toRegion);
-								regionsThatDidStuff.add( fromRegion );
-							}
-							else
-							{
-								debugLog(state, "getPath did not find anything!");
+								if (wantedSuperRegion.ownedByPlayer() == null)
+								{
+									Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_SUPER_REGION_ID, wantedSuperRegion.getId() );
+									if (toRegion != null)
+									{
+										attack(attackTransferMoves, state, fromRegion, toRegion);
+										regionsThatDidStuff.add( fromRegion );
+										break;
+									}
+									else
+									{
+										debugLog(state, "getPath did not find anything!");
+									}
+								}
 							}
 						}
 						catch(Exception e)
@@ -643,29 +651,42 @@ public class KompjoeWarlightBot implements Bot
 	protected static int SEARCH_FLAG_FIND_OPPONENT = 1;
 	protected static int SEARCH_FLAG_FIND_ANY = 2;
 	protected static int SEARCH_FLAG_FIND_REGION_ID = 4;
+	protected static int SEARCH_FLAG_FIND_SUPER_REGION_ID = 8;
 
-	protected static int SEARCH_FLAG_WITHIN_SUPER_REGION = 8;
+	protected static int SEARCH_FLAG_WITHIN_SUPER_REGION = 16;
 
 	protected static Region getPath(Region fromRegion, BotState state, int searchFlags) throws Exception
 	{
-		if ((searchFlags >> 2 & 1) != 0)
+		if ((searchFlags & SEARCH_FLAG_FIND_REGION_ID) != 0)
 		{
-			throw new FindPathException("Must supply a regionId when using SEARCH_FLAG_FIND_REGION_ID");
+			throw new FindPathException("Must supply an ID when using SEARCH_FLAG_FIND_REGION_ID");
+		}
+		if ((searchFlags & SEARCH_FLAG_FIND_SUPER_REGION_ID) != 0)
+		{
+			throw new FindPathException("Must supply an ID when using SEARCH_FLAG_FIND_SUPER_REGION_ID");
 		}
 		return getPath(fromRegion,state,searchFlags,0);
 	}
 
-	protected static Region getPath(Region fromRegion, BotState state, int searchFlags, int regionId) throws Exception
+	protected static Region getPath(Region fromRegion, BotState state, int searchFlags, int id) throws Exception
 	{
-		boolean findOpponent = (searchFlags >> 0 & 1) != 0;
-		boolean findAny = (searchFlags >> 1 & 1) != 0;
-		boolean findRegionId = (searchFlags >> 2 & 1) != 0;
+		boolean findOpponent = (searchFlags & SEARCH_FLAG_FIND_OPPONENT) != 0;
+		boolean findAny = (searchFlags & SEARCH_FLAG_FIND_ANY) != 0;
+		boolean findRegionId = (searchFlags & SEARCH_FLAG_FIND_REGION_ID) != 0;
+		boolean findSuperRegionId = (searchFlags & SEARCH_FLAG_FIND_SUPER_REGION_ID) != 0;
 
-		if (!findOpponent && !findAny && !findRegionId) { throw new FindPathException("Must specify one FIND search flag (found none)"); }
-		if ((findOpponent && findAny) || (findOpponent && findRegionId) || (findAny && findRegionId)) { throw new FindPathException("Must specify only one FIND search flag (found multiple)"); }
+		int nrOfFindOptions = 0;
+		if (findOpponent) { nrOfFindOptions++; }
+		if (findAny) { nrOfFindOptions++; }
+		if (findRegionId) { nrOfFindOptions++; }
+		if (findSuperRegionId) { nrOfFindOptions++; }
+		if (nrOfFindOptions == 0) { throw new FindPathException("Must specify one FIND search flag (found none)"); }
+		if (nrOfFindOptions > 1) { throw new FindPathException("Must specify only one FIND search flag (found "+nrOfFindOptions+")"); }
 
-		boolean flagWithinSuperRegion = (searchFlags >> 3 & 1) != 0;
+		boolean flagWithinSuperRegion = (searchFlags & SEARCH_FLAG_WITHIN_SUPER_REGION) != 0;
 
+		if (findRegionId && fromRegion.getId() == id) { return null; }
+		if (findSuperRegionId && fromRegion.getSuperRegion().getId() == id) { return null; }
 
 		// Find nearest region not owned by me, inside the same SuperRegion
 		ArrayList<Region> regionsVisited = new ArrayList<Region>();
@@ -687,7 +708,11 @@ public class KompjoeWarlightBot implements Bot
 				{
 					return neighbor; // Found target!
 				}
-				if (findRegionId && neighbor.getId() == regionId)
+				if (findRegionId && neighbor.getId() == id)
+				{
+					return neighbor; // Found target!
+				}
+				if (findSuperRegionId && neighbor.getSuperRegion().getId() == id)
 				{
 					return neighbor; // Found target!
 				}
@@ -714,7 +739,11 @@ public class KompjoeWarlightBot implements Bot
 						{
 							return neighbor; // Found target!
 						}
-						if (findRegionId && neighborNeighbor.getId() == regionId)
+						if (findRegionId && neighborNeighbor.getId() == id)
+						{
+							return neighbor; // Found target!
+						}
+						if (findSuperRegionId && neighborNeighbor.getSuperRegion().getId() == id)
 						{
 							return neighbor; // Found target!
 						}
@@ -751,7 +780,11 @@ public class KompjoeWarlightBot implements Bot
 							{
 								return startRegion; // Found target!
 							}
-							if (findRegionId && endRegionNeighbor.getId() == regionId)
+							if (findRegionId && endRegionNeighbor.getId() == id)
+							{
+								return startRegion; // Found target!
+							}
+							if (findSuperRegionId && endRegionNeighbor.getSuperRegion().getId() == id)
 							{
 								return startRegion; // Found target!
 							}

@@ -84,7 +84,7 @@ public class TestMoves
 								}
 							}
 
-							Assert.assertTrue("Must not move when next to an opponent", nextToEnemy && !move.getToRegion().ownedByPlayer(m_currentState.getOpponentPlayerName()));
+							Assert.assertFalse("Must not move when next to an opponent", nextToEnemy && !move.getToRegion().ownedByPlayer(m_currentState.getOpponentPlayerName()));
 						}
 
 						return;
@@ -177,7 +177,7 @@ public class TestMoves
 						ArrayList<Region> fromRegions = new ArrayList<Region>();
 						for ( AttackTransferMove move : attackTransferMoves )
 						{
-							Assert.assertTrue("Must not split up", fromRegions.contains(move.getFromRegion()));
+							Assert.assertFalse("Must not split up", fromRegions.contains(move.getFromRegion()));
 							fromRegions.add(move.getFromRegion());
 						}
 
@@ -268,7 +268,7 @@ public class TestMoves
 					// Actual test code here
 					if (m_currentState.getRoundNumber() == roundId)
 					{
-						Assert.assertTrue("Should move", attackTransferMoves.size() == 0);
+						Assert.assertFalse("Should move", attackTransferMoves.size() == 0);
 
 						return;
 					}
