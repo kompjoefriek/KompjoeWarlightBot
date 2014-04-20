@@ -1,6 +1,6 @@
 package bot;
 
-import main.Map;
+import main.GameMap;
 import main.Region;
 import main.SuperRegion;
 import move.AttackTransferMove;
@@ -15,8 +15,8 @@ public class BotState
 {
 	private String m_myName = "";
 	private String m_opponentName = "";
-	private final Map m_fullMap = new Map(); // This map is known from the start, contains all the regions and how they are connected, doesn't change after initialization
-	private Map m_visibleMap; // This map represents everything the player can see, updated at the end of each round.
+	private final GameMap m_fullMap = new GameMap(); // This map is known from the start, contains all the regions and how they are connected, doesn't change after initialization
+	private GameMap m_visibleMap; // This map represents everything the player can see, updated at the end of each round.
 	private ArrayList<Region> m_pickableStartingRegions; // 2 randomly chosen regions from each SuperRegion are given, which the bot can chose to start with
 	private ArrayList<Move> m_opponentMoves; // List of all the opponent's moves, reset at the end of each round
 	private int m_startingArmies; // Number of armies the player can place on map
@@ -179,7 +179,7 @@ public class BotState
 			}
 			catch (Exception e)
 			{
-				System.err.println("Unable to parse Map Update " + e.getMessage());
+				System.err.println("Unable to parse GameMap Update " + e.getMessage());
 			}
 		}
 		ArrayList<Region> unknownRegions = new ArrayList<Region>();
@@ -311,12 +311,12 @@ public class BotState
 		return m_roundNumber;
 	}
 
-	public Map getVisibleMap()
+	public GameMap getVisibleMap()
 	{
 		return m_visibleMap;
 	}
 
-	public Map getFullMap()
+	public GameMap getFullMap()
 	{
 		return m_fullMap;
 	}

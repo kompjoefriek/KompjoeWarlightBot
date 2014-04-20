@@ -30,6 +30,7 @@ public class KompjoeWarlightBot implements Bot
 	{
 		DEFAULT,
 		CONTINENT_GET, // http://knowyourmeme.com/memes/get
+		DEFEND_MODE, // No attacking
 		AGRO_MODE // attack ALL the regions!
 	}
 
@@ -37,7 +38,7 @@ public class KompjoeWarlightBot implements Bot
 
 	private Strategy m_currentStrategy;
 	private Strategy m_previousStrategy;
-	private SuperRegion m_strategySuperRegionGet; // used with Strategy.CONTINENT_GET
+	private SuperRegion m_strategySuperRegion; // used with Strategy.CONTINENT_GET
 	private int m_strategyMoveCounter;
 
 	private int m_noAttacksCounter;
@@ -48,7 +49,7 @@ public class KompjoeWarlightBot implements Bot
 		m_preferredSuperRegions = new ArrayList<SuperRegion>();
 		m_currentStrategy = Strategy.DEFAULT;
 		m_previousStrategy = Strategy.CONTINENT_GET;
-		m_strategySuperRegionGet = null;
+		m_strategySuperRegion = null;
 		m_strategyMoveCounter = 0;
 		m_noAttacksCounter = 0;
 	}
@@ -178,46 +179,165 @@ public class KompjoeWarlightBot implements Bot
 			m_strategyMoveCounter = 1;
 		}
 		m_previousStrategy = m_currentStrategy;
+		m_strategySuperRegion = null;
+
+		int nrOfOwnedSuperRegions = 0;
+		for (SuperRegion superRegion : state.getFullMap().getSuperRegions())
+		{
+			if (superRegion.ownedByPlayer() != null && superRegion.ownedByPlayer().equals(myName))
+			{
+				nrOfOwnedSuperRegions++;
+			}
+		}
 
 		// TODO: try to capture the center of the world (something with neighborSuperRegions > 1)
 
-		m_strategySuperRegionGet = null;
-		if ((state.getRoundNumber() <= 5 && state.isOpponentVisible() && !(m_strategyMoveCounter >= 2 && m_currentStrategy == Strategy.AGRO_MODE)) ||
-			state.isOpponentVisible() && m_strategyMoveCounter >= 5 && m_currentStrategy != Strategy.AGRO_MODE ||
-			state.getRoundNumber() >= 60)
+
+
+		if (state.getOwnedRegionsNextToOpponent().size() > 0 && nrOfOwnedSuperRegions == 0)
+		{
+			m_currentStrategy = Strategy.DEFEND_MODE;
+		}
+		else if ((state.isOpponentVisible() && !(m_strategyMoveCounter >= 2 && m_currentStrategy == Strategy.AGRO_MODE)) ||
+			state.isOpponentVisible() && m_strategyMoveCounter >= 5 && m_currentStrategy != Strategy.AGRO_MODE)
 		{
 			m_currentStrategy = Strategy.AGRO_MODE;
 		}
 		else
 		{
 			m_currentStrategy = Strategy.DEFAULT;
-			for ( SuperRegion superRegion : m_preferredSuperRegions.subList(0,3) )
-			{
-				if (superRegion.ownedByPlayer() != null && superRegion.ownedByPlayer().equals(myName))
-				{
-					m_currentStrategy = Strategy.CONTINENT_GET;
-					m_strategySuperRegionGet = superRegion;
 
-					boolean someOwnedByMe = false;
-					for ( Region subRegion : superRegion.getSubRegions() )
+			if (!state.isOpponentVisible())
+			{
+				for ( SuperRegion superRegion : m_preferredSuperRegions )
+				{
+					if (superRegion.ownedByPlayer() != null && superRegion.ownedByPlayer().equals(myName))
 					{
-						if (subRegion.ownedByPlayer(myName))
+						m_currentStrategy = Strategy.CONTINENT_GET;
+						m_strategySuperRegion = superRegion;
+
+						boolean someOwnedByMe = false;
+						for ( Region subRegion : superRegion.getSubRegions() )
 						{
-							someOwnedByMe = true;
+							if (subRegion.ownedByPlayer(myName))
+							{
+								someOwnedByMe = true;
+								break;
+							}
+						}
+
+						if (someOwnedByMe)
+						{
+							// Ok, lets get this superRegion
 							break;
 						}
-					}
-
-					if (someOwnedByMe)
-					{
-						// Ok, lets get this superRegion
-						break;
 					}
 				}
 			}
 		}
 
-		if (m_currentStrategy == Strategy.AGRO_MODE)
+		if (m_currentStrategy == Strategy.DEFEND_MODE)
+		{
+			// Find the region i should be defending
+			Region defendRegion = null;
+			for ( SuperRegion superRegion : m_preferredSuperRegions )
+			{
+				for (Region subRegion :  superRegion.getSubRegions())
+				{
+					if (state.getOwnedRegionsNextToOpponent().contains(subRegion))
+					{
+						if (defendRegion != null)
+						{
+							// Find region next to an opponent with the most armies
+							if (subRegion.getArmies() > defendRegion.getArmies())
+							{
+								defendRegion = subRegion;
+							}
+						}
+						else
+						{
+							// Find region next to an opponent (this is the first we found in this SuperRegion)
+							defendRegion = subRegion;
+						}
+					}
+				}
+			}
+
+			if (defendRegion != null)
+			{
+				m_strategySuperRegion = defendRegion.getSuperRegion();
+
+				// Find opponent next to the defend region with the most armies
+				Region opponent = null;
+				for (Region neighbor : defendRegion.getNeighbors())
+				{
+					if (neighbor.ownedByPlayer(opponentName))
+					{
+						if (opponent != null)
+						{
+							if (neighbor.getArmies() > opponent.getArmies())
+							{
+								opponent = neighbor;
+							}
+						}
+						else
+						{
+							opponent = neighbor;
+						}
+					}
+				}
+
+				if (defendRegion.getArmies() > 10 && opponent != null && ((defendRegion.getArmies() / (double)opponent.getArmies()) > 0.90))
+				{
+					// Sneak some armies into another super region
+					Region regionToSneakTo = null;
+					for ( SuperRegion superRegion : m_preferredSuperRegions )
+					{
+						if (superRegion.ownedByPlayer() == null && superRegion != m_strategySuperRegion && superRegion != opponent.getSuperRegion() && !opponent.getNeighborSuperRegions().contains(superRegion))
+						{
+							for (Region subRegion : superRegion.getSubRegions())
+							{
+								if (subRegion.ownedByPlayer(myName))
+								{
+									if (regionToSneakTo != null)
+									{
+										if (subRegion.getArmies() > regionToSneakTo.getArmies())
+										{
+											regionToSneakTo = subRegion;
+										}
+									}
+									else
+									{
+										regionToSneakTo = subRegion;
+									}
+								}
+							}
+
+							if (regionToSneakTo != null)
+							{
+								break;
+							}
+						}
+					}
+
+					if (regionToSneakTo != null)
+					{
+						placeArmiesMoves.add(new PlaceArmiesMove(myName, regionToSneakTo, armies));
+						regionToSneakTo.setArmies(regionToSneakTo.getArmies() + armies); // Update internal stuff
+						armiesLeft -= armies;
+					}
+				}
+
+				// Place all on defending region
+				placeArmiesMoves.add(new PlaceArmiesMove(myName, defendRegion, armiesLeft));
+				defendRegion.setArmies(defendRegion.getArmies() + armiesLeft); // Update internal stuff
+			}
+			else
+			{
+				debugLog(state, "Wow. no defend region found!");
+			}
+		}
+		else if (m_currentStrategy == Strategy.AGRO_MODE)
 		{
 			if (state.getOwnedRegionsNextToOpponent().size() > 0)
 			{
@@ -227,11 +347,11 @@ public class KompjoeWarlightBot implements Bot
 				return placeArmiesMoves;
 			}
 		}
-		else if (m_currentStrategy == Strategy.CONTINENT_GET && m_strategySuperRegionGet != null)
+		else if (m_currentStrategy == Strategy.CONTINENT_GET && m_strategySuperRegion != null)
 		{
 			// Find regions in this superRegion we can take-over
 			//ArrayList<Region> regionsToTakeOver = new ArrayList<Region>();
-			for ( Region subRegion : m_strategySuperRegionGet.getSubRegions() )
+			for ( Region subRegion : m_strategySuperRegion.getSubRegions() )
 			{
 				if (!subRegion.ownedByPlayer(myName))
 				{
@@ -249,12 +369,10 @@ public class KompjoeWarlightBot implements Bot
 			}
 		}
 
-
 		// Try to place armies on the region next to nobody with the most armies (to raise their numbers so it can expand)
 		if (state.getOwnedRegionsNextToNobody().size() > 0)
 		{
 			placeArmies( placeArmiesMoves, myName, state.getOwnedRegionsNextToNobody().get(0), armies );
-			//placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToNobody.get(0), armies));
 			state.getOwnedRegionsNextToNobody().get(0).setArmies(state.getOwnedRegionsNextToNobody().get(0).getArmies() + armies); // Update internal stuff
 			armiesLeft -= armies;
 		}
@@ -265,9 +383,7 @@ public class KompjoeWarlightBot implements Bot
 		{
 			if (armies > armiesLeft) { armies = armiesLeft; }
 			placeArmies( placeArmiesMoves, myName, state.getOwnedRegionsNextToOpponent().get(idxRegion), armies );
-			//placeArmiesMoves.add(new PlaceArmiesMove(myName, ownedRegionsNextToOpponent.get(idxRegion), armies));
-			state.getOwnedRegionsNextToOpponent().get(idxRegion).setArmies( state.getOwnedRegionsNextToOpponent().get(
-				idxRegion).getArmies() + armies); // Update internal stuff
+			state.getOwnedRegionsNextToOpponent().get(idxRegion).setArmies( state.getOwnedRegionsNextToOpponent().get(idxRegion).getArmies() + armies); // Update internal stuff
 			armiesLeft -= armies;
 			idxRegion++;
 		}
@@ -281,7 +397,6 @@ public class KompjoeWarlightBot implements Bot
 				{
 					if (armies > armiesLeft) { armies = armiesLeft; }
 					placeArmies( placeArmiesMoves, myName, region, armies );
-					//placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
 					region.setArmies(region.getArmies() + armies); // Update internal stuff
 					armiesLeft -= armies;
 				}
@@ -295,7 +410,7 @@ public class KompjoeWarlightBot implements Bot
 			double rand = Math.random();
 			if (state.getOwnedRegions().size() == 0)
 			{
-				System.err.println("Wow. Internal check failed! (no owned regions found)");
+				debugLog(state, "Wow. Internal check failed! (no owned regions found)");
 			}
 			int r = (int) (rand * state.getOwnedRegions().size());
 			Region region = state.getOwnedRegions().get(r);
@@ -306,7 +421,6 @@ public class KompjoeWarlightBot implements Bot
 			if (!region.getSuperRegion().getFullyGuarded() || tries > state.getFullMap().getRegions().size())
 			{
 				placeArmies( placeArmiesMoves, myName, region, armies );
-				//placeArmiesMoves.add(new PlaceArmiesMove(myName, region, armies));
 				region.setArmies(region.getArmies() + armies); // Update internal stuff
 				armiesLeft -= armies;
 			}
@@ -353,7 +467,7 @@ public class KompjoeWarlightBot implements Bot
 					threadCount += neighbor.getArmies();
 				}
 			}
-			if (threadCount > 0 && threadCount >= fromRegion.getArmies() - 3 && m_currentStrategy != Strategy.AGRO_MODE)
+			if (threadCount > 0 && threadCount >= fromRegion.getArmies() - 3)
 			{
 				// fromRegion is defending :-)
 				regionsThatDidStuff.add(fromRegion);
@@ -374,9 +488,35 @@ public class KompjoeWarlightBot implements Bot
 				if (fromRegion.getSuperRegion().ownedByPlayer() == null && !state.getOwnedRegionsNextToOpponent().contains(fromRegion) && m_currentStrategy != Strategy.AGRO_MODE)
 				{
 					// This SuperRegion is not owned by me yet!
+
+					// How about we try to find the region we don't yet own with the least neighbors (start in the corners and work outwards from there)
+					Region targetRegion = null;
+					for (Region region : fromRegion.getSuperRegion().getSubRegions())
+					{
+						if (!region.ownedByPlayer(state.getMyPlayerName()))
+						{
+							if (targetRegion == null)
+							{
+								targetRegion = region;
+							}
+							else if (region.getNeighbors().size() < targetRegion.getNeighbors().size())
+							{
+								targetRegion = region;
+							}
+						}
+					}
+
 					try
 					{
-						Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_ANY | SEARCH_FLAG_WITHIN_SUPER_REGION );
+						Region toRegion = null;
+						if (targetRegion != null)
+						{
+							toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_REGION_ID, targetRegion.getId() );
+						}
+						else
+						{
+							toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_ANY | SEARCH_FLAG_WITHIN_SUPER_REGION );
+						}
 						if (toRegion != null)
 						{
 							attack(attackTransferMoves, state, fromRegion, toRegion);
@@ -389,6 +529,7 @@ public class KompjoeWarlightBot implements Bot
 					}
 					catch(Exception e)
 					{
+						debugLog(state, "Exception: " + e.getMessage() );
 					}
 				}
 				else
@@ -411,6 +552,7 @@ public class KompjoeWarlightBot implements Bot
 						}
 						catch(Exception e)
 						{
+							debugLog(state, "Exception: " + e.getMessage() );
 						}
 					}
 					else
@@ -439,6 +581,7 @@ public class KompjoeWarlightBot implements Bot
 						}
 						catch(Exception e)
 						{
+							debugLog(state, "Exception: " + e.getMessage() );
 						}
 					}
 				}
@@ -529,11 +672,20 @@ public class KompjoeWarlightBot implements Bot
 		}
 
 		// Lame-ass stalemate detection
-		if (attackTransferMoves.size() == 0)	{ m_noAttacksCounter++; }
-		else                               		{ m_noAttacksCounter = 0; }
-
-		if (m_noAttacksCounter > 10)
+		int nrOfAttacks = 0;
+		for (AttackTransferMove move : attackTransferMoves )
 		{
+			if (!move.getToRegion().ownedByPlayer(myName))
+			{
+				nrOfAttacks++;
+			}
+		}
+		if (nrOfAttacks == 0)	{ m_noAttacksCounter++; }
+		else					{ m_noAttacksCounter = 0; }
+
+		if (m_noAttacksCounter > 15)
+		{
+			System.err.println("Stalemate detection was triggered in round "+state.getRoundNumber());
 			if (regionsThatCanDoStuff.size() > 0)
 			{
 				for (Region region : regionsThatCanDoStuff)
@@ -622,6 +774,7 @@ public class KompjoeWarlightBot implements Bot
 		}
 		catch(Exception e)
 		{
+			debugLog(state, "Exception: " + e.getMessage() );
 			// Something went wrong... return old stuff
 			return attackTransferMoves;
 		}
@@ -640,7 +793,7 @@ public class KompjoeWarlightBot implements Bot
 	protected static int getAvailableArmies( Region region, String myName )
 	{
 		int attackArmies = region.getArmies()-SuperRegion.MIN_GUARD_REGION;
-		if (region.getNeighborSuperRegions().size() > 0 && region.getSuperRegion().ownedByPlayer() != myName)
+		if (region.getNeighborSuperRegions().size() > 0 && (region.getSuperRegion().ownedByPlayer() == null || !region.getSuperRegion().ownedByPlayer().equals(myName)))
 		{
 			attackArmies = region.getArmies()-SuperRegion.MIN_GUARD_BORDER_REGION;
 		}
@@ -814,7 +967,7 @@ public class KompjoeWarlightBot implements Bot
 
 	protected void debugLog( BotState state, String string )
 	{
-		if (state.isDebugMode())
+		//if (state.isDebugMode())
 		{
 			StackTraceElement userTrace = Thread.currentThread().getStackTrace()[2];
 			System.err.println(string + " " + userTrace.getFileName() + "(" + userTrace.getLineNumber() + ")" );

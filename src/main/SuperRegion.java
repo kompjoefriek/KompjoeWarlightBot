@@ -129,7 +129,7 @@ public class SuperRegion
 	public String toString()
 	{
 		return "id:" +  m_id + "," +
-			"name:" + RegionName.getName(m_id) + "," +
+			"name:" + SuperRegionName.getName(m_id) + "," +
 			"armiesRewarded:" + m_armiesReward + "," +
 			"fullyGuarded:" +  m_fullyGuarded;
 	}
