@@ -488,35 +488,9 @@ public class KompjoeWarlightBot implements Bot
 				if (fromRegion.getSuperRegion().ownedByPlayer() == null && !state.getOwnedRegionsNextToOpponent().contains(fromRegion) && m_currentStrategy != Strategy.AGRO_MODE)
 				{
 					// This SuperRegion is not owned by me yet!
-
-					// How about we try to find the region we don't yet own with the least neighbors (start in the corners and work outwards from there)
-					Region targetRegion = null;
-					for (Region region : fromRegion.getSuperRegion().getSubRegions())
-					{
-						if (!region.ownedByPlayer(state.getMyPlayerName()))
-						{
-							if (targetRegion == null)
-							{
-								targetRegion = region;
-							}
-							else if (region.getNeighbors().size() < targetRegion.getNeighbors().size())
-							{
-								targetRegion = region;
-							}
-						}
-					}
-
 					try
 					{
-						Region toRegion = null;
-						if (targetRegion != null)
-						{
-							toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_REGION_ID, targetRegion.getId() );
-						}
-						else
-						{
-							toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_ANY | SEARCH_FLAG_WITHIN_SUPER_REGION );
-						}
+						Region toRegion = getPath(fromRegion, state, SEARCH_FLAG_FIND_ANY | SEARCH_FLAG_WITHIN_SUPER_REGION );
 						if (toRegion != null)
 						{
 							attack(attackTransferMoves, state, fromRegion, toRegion);
