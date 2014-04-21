@@ -24,7 +24,7 @@ import move.PlaceArmiesMove;
 
 import java.util.*;
 
-public class KompjoeWarlightBot implements Bot
+public class Gir implements Bot
 {
 	public enum Strategy
 	{
@@ -44,7 +44,7 @@ public class KompjoeWarlightBot implements Bot
 	private int m_noAttacksCounter;
 
 
-	public KompjoeWarlightBot()
+	public Gir()
 	{
 		m_preferredSuperRegions = new ArrayList<SuperRegion>();
 		m_currentStrategy = Strategy.DEFAULT;
@@ -58,8 +58,7 @@ public class KompjoeWarlightBot implements Bot
 	@Override
 	/**
 	 * A method used at the start of the game to decide which player start with what Regions. 6 Regions are required to be returned.
-	 * This example randomly picks 6 regions from the pickable starting Regions given by the engine.
-	 * @return : a list of m (m=6) Regions starting with the most preferred Region and ending with the least preferred Region to start with 
+	 * @return : a list of m (m=6) Regions starting with the most preferred Region and ending with the least preferred Region to start with
 	 */
 	public ArrayList<Region> getPreferredStartingRegions(BotState state, Long timeOut)
 	{
@@ -110,7 +109,7 @@ public class KompjoeWarlightBot implements Bot
 	}
 
 
-	// Group placement commands together
+	// Group placement-commands together
 	private void placeArmies(ArrayList<PlaceArmiesMove> placeArmiesMoves, String myName, Region place, int armies )
 	{
 		for (PlaceArmiesMove move : placeArmiesMoves)
@@ -158,8 +157,7 @@ public class KompjoeWarlightBot implements Bot
 
 	@Override
 	/**
-	 * This method is called for at first part of each round. This example puts two armies on random regions
-	 * until he has no more armies left to place.
+	 * This method is called for at first part of each round.
 	 * @return The list of PlaceArmiesMoves for one round
 	 */
 	public ArrayList<PlaceArmiesMove> getPlaceArmiesMoves(BotState state, Long timeOut)
@@ -331,6 +329,8 @@ public class KompjoeWarlightBot implements Bot
 				// Place all on defending region
 				placeArmiesMoves.add(new PlaceArmiesMove(myName, defendRegion, armiesLeft));
 				defendRegion.setArmies(defendRegion.getArmies() + armiesLeft); // Update internal stuff
+				//armiesLeft -= armiesLeft;
+				return placeArmiesMoves;
 			}
 			else
 			{
@@ -432,8 +432,7 @@ public class KompjoeWarlightBot implements Bot
 
 	@Override
 	/**
-	 * This method is called for at the second part of each round. This example attacks if a region has
-	 * more than 6 armies on it, and transfers if it has less than 6 and a neighboring owned region.
+	 * This method is called for at the second part of each round.
 	 * @return The list of PlaceArmiesMoves for one round
 	 */
 	public ArrayList<AttackTransferMove> getAttackTransferMoves(BotState state, Long timeOut)
@@ -459,7 +458,7 @@ public class KompjoeWarlightBot implements Bot
 		for( Region fromRegion : regionsThatCanDoStuff )
 		{
 			// First check if this region is not next to an opponent (and is a thread)
-			int threadCount = 0;
+			int threadCount = 0; // thread is meant as danger, not to confuse with computer terms :-)
 			for ( Region neighbor : fromRegion.getNeighbors() )
 			{
 				if (neighbor.ownedByPlayer(opponentName))
@@ -472,6 +471,11 @@ public class KompjoeWarlightBot implements Bot
 				// fromRegion is defending :-)
 				regionsThatDidStuff.add(fromRegion);
 				continue;
+			}
+			// Quick test to see if i can get complete continents while in AGRO_MODE
+			if (threadCount == 0 && fromRegion.getArmies() >= 3 && state.getOwnedRegionsNextToNobody().contains(fromRegion))
+			{
+				// TODO.
 			}
 
 			boolean toMuchArmies = false;
@@ -954,11 +958,11 @@ public class KompjoeWarlightBot implements Bot
 		BotParser parser;
 		if (args.length > 0)
 		{
-			parser = new BotParser(new KompjoeWarlightBot(), args[0]);
+			parser = new BotParser(new Gir(), args[0]);
 		}
 		else
 		{
-			parser = new BotParser(new KompjoeWarlightBot());
+			parser = new BotParser(new Gir());
 		}
 		parser.run();
 	}

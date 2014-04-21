@@ -28,7 +28,7 @@ public class TestMoves
 	@Before
 	public void setUp() throws Exception
 	{
-		m_bot = new KompjoeWarlightBot();
+		m_bot = new Gir();
 		m_currentState = new BotState();
 		//m_currentState.setDebugMode();
 	}

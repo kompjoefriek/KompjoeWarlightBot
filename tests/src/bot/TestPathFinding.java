@@ -53,7 +53,7 @@ public class TestPathFinding
 		Region fromRegion = m_currentState.getVisibleMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
 
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, 0);
+		Region result = Gir.getPath(fromRegion, m_currentState, 0);
 	}
 
 	@Test
@@ -66,7 +66,8 @@ public class TestPathFinding
 		Region fromRegion = m_currentState.getVisibleMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
 
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_ANY | KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID);
+		Region result = Gir
+			.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_ANY | Gir.SEARCH_FLAG_FIND_REGION_ID);
 	}
 
 	@Test
@@ -77,7 +78,7 @@ public class TestPathFinding
 		Region fromRegion = m_currentState.getVisibleMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
 
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_OPPONENT);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_OPPONENT);
 		Assert.assertNotNull("Should have found 8 but found nothing", result);
 		Assert.assertTrue("Should have found 8 but found region "+result.getId(), result.getId() == 8);
 	}
@@ -90,7 +91,7 @@ public class TestPathFinding
 		Region fromRegion = m_currentState.getVisibleMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
 
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_OPPONENT);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_OPPONENT);
 		Assert.assertNotNull("Should have found Region 7 or 8 but found nothing", result);
 		Assert.assertTrue("Should have found Region 7 or 8 but found region "+result.getId(), result.getId() == 7 || result.getId() == 8);
 	}
@@ -103,13 +104,13 @@ public class TestPathFinding
 		Region fromRegion = m_currentState.getVisibleMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
 
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_ANY);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_ANY);
 		Assert.assertNotNull("Should have found 8 but found nothing", result);
 		Assert.assertTrue("Should have found 8 but found region "+result.getId(), result.getId() == 8);
 
 		m_currentState.updateMap("update_map 1 player1 2 2 player1 2 3 player1 2 4 player1 2 5 player1 2 6 player1 2 7 player1 2 9 player2 2 8 player2 2".split(" "));
 
-		result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_ANY);
+		result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_ANY);
 		Assert.assertNotNull("Should have found 8 but found nothing", result);
 		Assert.assertTrue("Should have found 8 but found region "+result.getId(), result.getId() == 8);
 	}
@@ -122,12 +123,12 @@ public class TestPathFinding
 		Region fromRegion = m_currentState.getVisibleMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
 
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_ANY);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_ANY);
 		Assert.assertNotNull("Should have found Region 7 or 8 (target = neutral Region 9) but found nothing", result);
 		Assert.assertTrue("Should have found Region 7 or 8 (target = neutral Region 9) but found region "+result.getId(), result.getId() == 7 || result.getId() == 8);
 
 		m_currentState.updateMap("update_map 1 player1 2 2 player1 2 3 player1 2 4 player1 2 5 player1 2 6 player1 2 7 player1 2 8 player1 2 14 player1 2 9 player2 2".split(" "));
-		result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_ANY);
+		result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_ANY);
 		Assert.assertNotNull("Should have found Region 7 or 8 (target = opponent Region 9) but found nothing", result);
 		Assert.assertTrue("Should have found Region 7 or 8 (target = opponent Region 9) but found region "+result.getId(), result.getId() == 7 || result.getId() == 8);
 	}
@@ -138,7 +139,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(5); // Ontario
 		Assert.assertNotNull("Could not find region 5", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 8); // EasternUnitedStates
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID, 8); // EasternUnitedStates
 		Assert.assertNotNull("Should have found 8 but found nothing", result);
 		Assert.assertTrue("Should have found 8 but found region "+result.getId(), result.getId() == 8);
 	}
@@ -149,7 +150,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 22); // Egypt
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID, 22); // Egypt
 		Assert.assertNotNull("Should have found 9 but found nothing", result);
 		Assert.assertTrue("Should have found 9 but found region "+result.getId(), result.getId() == 9);
 	}
@@ -162,7 +163,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID);
 	}
 
 	@Test
@@ -171,7 +172,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 8);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID, 8);
 		Assert.assertNull("Should have found nothing", result);
 	}
 
@@ -181,7 +182,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 999); // Non-existing region id
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID, 999); // Non-existing region id
 		Assert.assertNull("Should have found nothing", result);
 	}
 
@@ -191,7 +192,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(5); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 5", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 7); // Non-existing region id
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID, 7); // Non-existing region id
 		Assert.assertNotNull("Should have found 7 but found nothing", result);
 		Assert.assertTrue("Should have found 7 but found region " + result.getId(), result.getId() == 7);
 	}
@@ -202,7 +203,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(5); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 5", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_REGION_ID, 1); // Non-existing region id
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_REGION_ID, 1); // Non-existing region id
 		Assert.assertNotNull("Should have found Region 2 or 4 (target = opponent Region 9) but found nothing", result);
 		Assert.assertTrue(
 			"Should have found Region 2 or 4 (target = opponent Region 9) but found region " + result.getId(),
@@ -217,7 +218,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_SUPER_REGION_ID);
 	}
 
 	@Test
@@ -226,7 +227,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 999); // Non-existing super region id
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_SUPER_REGION_ID, 999); // Non-existing super region id
 		Assert.assertNull("Should have found nothing", result);
 	}
 
@@ -236,7 +237,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(9); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 9", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 2);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_SUPER_REGION_ID, 2);
 		Assert.assertNotNull("Should have found 10 but found nothing", result);
 		Assert.assertTrue("Should have found 10 but found region "+result.getId(), result.getId()== 10);
 	}
@@ -247,7 +248,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 2);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_SUPER_REGION_ID, 2);
 		Assert.assertNotNull("Should have found 9 but found nothing", result);
 		Assert.assertTrue("Should have found 9 but found region "+result.getId(), result.getId()== 9);
 	}
@@ -258,7 +259,7 @@ public class TestPathFinding
 		setupDefaultMap();
 		Region fromRegion = m_currentState.getFullMap().getRegion(8); // EasternUnitedStates
 		Assert.assertNotNull("Could not find region 8", fromRegion);
-		Region result = KompjoeWarlightBot.getPath(fromRegion, m_currentState, KompjoeWarlightBot.SEARCH_FLAG_FIND_SUPER_REGION_ID, 4);
+		Region result = Gir.getPath(fromRegion, m_currentState, Gir.SEARCH_FLAG_FIND_SUPER_REGION_ID, 4);
 		Assert.assertNotNull("Should have found 9 but found nothing", result);
 		Assert.assertTrue("Should have found 9 but found region "+result.getId(), result.getId()== 9);
 	}

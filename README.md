@@ -1,11 +1,12 @@
 KompjoeWarlightBot
 ==================
 
-This is a bot for [Warlight][1], an IA challenge by The AI Games.
+This is [Gir[1], a bot for [Warlight][1], an IA challenge by The AI Games.
 
-I just started with their [example bot][2], and went from there...
+I just started with their [example bot][2], and went from there.
 
-Currently getting ready for a rewrite of the decision-making stuff
+It is about as "advanced" as the original Gir ;-)
 
-[1]: http://theaigames.com/competitions/warlight-ai-challenge "Warlight"
-[2]: https://github.com/theaigames/conquest-engine/tree/master/bot "example bot"
+[1]: https://www.youtube.com/watch?v=df5c8odGMfs "Gir"
+[2]: http://theaigames.com/competitions/warlight-ai-challenge "Warlight"
+[3]: https://github.com/theaigames/conquest-engine/tree/master/bot "example bot"
