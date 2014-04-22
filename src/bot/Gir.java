@@ -22,7 +22,9 @@ import main.SuperRegion;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class Gir implements Bot
 {
@@ -209,7 +211,7 @@ public class Gir implements Bot
 			{
 				for ( SuperRegion superRegion : m_preferredSuperRegions )
 				{
-					if (superRegion.ownedByPlayer() != null && superRegion.ownedByPlayer().equals(myName))
+					if (superRegion.ownedByPlayer() == null || !superRegion.ownedByPlayer().equals(myName))
 					{
 						m_currentStrategy = Strategy.CONTINENT_GET;
 						m_strategySuperRegion = superRegion;
@@ -472,10 +474,35 @@ public class Gir implements Bot
 				regionsThatDidStuff.add(fromRegion);
 				continue;
 			}
+
 			// Quick test to see if i can get complete continents while in AGRO_MODE
-			if (threadCount == 0 && fromRegion.getArmies() >= 3 && state.getOwnedRegionsNextToNobody().contains(fromRegion))
+			if (m_currentStrategy == Strategy.AGRO_MODE && threadCount == 0 && fromRegion.getArmies() >= 3 && state.getOwnedRegionsNextToNobody().contains(fromRegion))
 			{
-				// TODO.
+				for (Region neighbor : fromRegion.getNeighbors())
+				{
+					if (!neighbor.ownedByPlayer(myName))
+					{
+						int numberOfRegionsNotOwned = 0;
+						int numberOfRegionsOpponent = 0;
+						for (Region region : neighbor.getSuperRegion().getSubRegions())
+						{
+							if (!region.ownedByPlayer(myName))
+							{
+								if (region.ownedByPlayer(opponentName))
+								{
+									numberOfRegionsOpponent++;
+								}
+								numberOfRegionsNotOwned++;
+							}
+						}
+
+						if (numberOfRegionsNotOwned <= 2 && numberOfRegionsOpponent == 0)
+						{
+							attack(attackTransferMoves, state, fromRegion, neighbor);
+							regionsThatDidStuff.add( fromRegion );
+						}
+					}
+				}
 			}
 
 			boolean toMuchArmies = false;
