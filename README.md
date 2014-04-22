@@ -1,9 +1,9 @@
 KompjoeWarlightBot
 ==================
 
-This is [Gir[1], a bot for [Warlight][1], an IA challenge by The AI Games.
+This is [Gir][1], a bot for [Warlight][2], an IA challenge by The AI Games.
 
-I just started with their [example bot][2], and went from there.
+I just started with their [example bot][3], and went from there.
 
 It is about as "advanced" as the original Gir ;-)
 
