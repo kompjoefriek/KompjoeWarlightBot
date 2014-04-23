@@ -287,13 +287,13 @@ public class Gir implements Bot
 					}
 				}
 
-				if (defendRegion.getArmies() > 10 && opponent != null && ((defendRegion.getArmies() / (double)opponent.getArmies()) > 0.90))
+				if (defendRegion.getArmies() > 10 && opponent != null && ((defendRegion.getArmies() / (double)opponent.getArmies()) > 0.85))
 				{
 					// Sneak some armies into another super region
 					Region regionToSneakTo = null;
 					for ( SuperRegion superRegion : m_preferredSuperRegions )
 					{
-						if (superRegion.ownedByPlayer() == null && superRegion != m_strategySuperRegion && superRegion != opponent.getSuperRegion() && !opponent.getNeighborSuperRegions().contains(superRegion))
+						if (superRegion.ownedByPlayer() == null && superRegion != m_strategySuperRegion && superRegion != opponent.getSuperRegion() /* && !opponent.getNeighborSuperRegions().contains(superRegion) */)
 						{
 							for (Region subRegion : superRegion.getSubRegions())
 							{
@@ -688,7 +688,7 @@ public class Gir implements Bot
 		if (nrOfAttacks == 0)	{ m_noAttacksCounter++; }
 		else					{ m_noAttacksCounter = 0; }
 
-		if (m_noAttacksCounter > 15)
+		if (m_noAttacksCounter > 25)
 		{
 			System.err.println("Stalemate detection was triggered in round "+state.getRoundNumber());
 			if (regionsThatCanDoStuff.size() > 0)
