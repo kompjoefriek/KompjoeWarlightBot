@@ -207,7 +207,6 @@ public class BotState
 		m_opponentVisible = false;
 
 		// Build list of owned Regions and one with owned Regions next to opponent
-
 		for (Region region : m_visibleMap.getRegions())
 		{
 			if (region.ownedByPlayer(m_myName))

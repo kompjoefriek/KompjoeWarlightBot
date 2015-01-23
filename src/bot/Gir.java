@@ -190,8 +190,9 @@ public class Gir implements Bot
 			}
 		}
 
-		// TODO: try to capture the center of the world (something with neighborSuperRegions > 1)
 
+		// TODO: try to capture the center of the world (something with neighborSuperRegions > 1)
+		//       Yeeeaaah... i don't think this is going to happen :-)
 
 
 		if (state.getOwnedRegionsNextToOpponent().size() > 0 && nrOfOwnedSuperRegions == 0)
@@ -444,6 +445,7 @@ public class Gir implements Bot
 		String opponentName = state.getOpponentPlayerName();
 		ArrayList<AttackTransferMove> attackTransferMoves = new ArrayList<AttackTransferMove>();
 
+		// Used for debugging
 		//if (state.getRoundNumber() >= 43)
 		//{
 		//	boolean debugMe = true;
@@ -810,7 +812,6 @@ public class Gir implements Bot
 	protected static int SEARCH_FLAG_FIND_ANY = 2;
 	protected static int SEARCH_FLAG_FIND_REGION_ID = 4;
 	protected static int SEARCH_FLAG_FIND_SUPER_REGION_ID = 8;
-
 	protected static int SEARCH_FLAG_WITHIN_SUPER_REGION = 16;
 
 	protected static Region getPath(Region fromRegion, BotState state, int searchFlags) throws Exception

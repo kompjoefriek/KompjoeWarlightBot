@@ -1,10 +1,10 @@
 package bot;
 
-import junit.framework.Assert;
 import main.Region;
 import main.SuperRegionName;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
+import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
