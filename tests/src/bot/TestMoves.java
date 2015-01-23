@@ -99,6 +99,11 @@ public class TestMoves
 				// Update settings
 				m_currentState.updateSettings(parts[1], parts[2]);
 			}
+			else if (parts.length > 2 && parts[0].equals("settings"))
+			{
+				// Update settings
+				m_currentState.updateSettings(parts[1], parts);
+			}
 			else if (parts[0].equals("setup_map"))
 			{
 				// Initial full map is given

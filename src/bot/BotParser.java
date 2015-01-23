@@ -51,16 +51,28 @@ public class BotParser
 			String[] parts = line.split(" ");
 			if (parts[0].equals("pick_starting_regions"))
 			{
-				// Pick which regions you want to start with
+				// Note: the starting regions are set before this happens
+				// In Warlight2, this will be called repeatedly between bots until there are no more starting regions left.
 				m_currentState.setPickableStartingRegions(parts);
+				// Pick which regions you want to start with.
 				ArrayList<Region> preferredStartingRegions = m_bot.getPreferredStartingRegions(m_currentState, Long.valueOf(parts[1]));
-				String output = "";
-				for (Region region : preferredStartingRegions)
+				// Output only one region ID
+				if (preferredStartingRegions.size() > 0)
 				{
-					output = output.concat(region.getId() + " ");
+					System.out.println("" + preferredStartingRegions.get(0));
 				}
-
-				System.out.println(output);
+				else
+				{
+					// No regions? just output 0
+					System.out.println("0");
+				}
+//				String output = "";
+//				for (Region region : preferredStartingRegions)
+//				{
+//					output = output.concat(region.getId() + " ");
+//				}
+//
+//				System.out.println(output);
 			}
 			else if (parts.length == 3 && parts[0].equals("go"))
 			{
@@ -93,6 +105,11 @@ public class BotParser
 			{
 				// Update settings
 				m_currentState.updateSettings(parts[1], parts[2]);
+			}
+			else if (parts.length > 2 && parts[0].equals("settings"))
+			{
+				// Update settings
+				m_currentState.updateSettings(parts[1], parts);
 			}
 			else if (parts[0].equals("setup_map"))
 			{

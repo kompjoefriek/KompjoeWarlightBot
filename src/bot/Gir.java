@@ -42,7 +42,6 @@ public class Gir implements Bot
 	private Strategy m_previousStrategy;
 	private SuperRegion m_strategySuperRegion; // used with Strategy.CONTINENT_GET
 	private int m_strategyMoveCounter;
-
 	private int m_noAttacksCounter;
 
 
@@ -450,6 +449,9 @@ public class Gir implements Bot
 		//{
 		//	boolean debugMe = true;
 		//}
+
+		// TODO: Depending on how many rounds are left, we could get more aggressive or something...
+		// See state.getMaxRounds() and state.getRoundNumber()
 
 		////////////////////////////////////////////////////////////////////////////////////
 		// Move armies from the region with the most armies towards the opponent. we just need to find the closes region
