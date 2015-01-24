@@ -60,20 +60,13 @@ public class BotParser
 				// Output only one region ID
 				if (preferredStartingRegions.size() > 0)
 				{
-					System.out.println("" + preferredStartingRegions.get(0));
+					System.out.println("" + preferredStartingRegions.get(0).getId());
 				}
 				else
 				{
 					// No regions? just output 0
 					System.out.println("0");
 				}
-//				String output = "";
-//				for (Region region : preferredStartingRegions)
-//				{
-//					output = output.concat(region.getId() + " ");
-//				}
-//
-//				System.out.println(output);
 			}
 			// Warlight1 function. Warlight2 does not use this anymore
 			else if (parts[0].equals("pick_starting_regions"))
