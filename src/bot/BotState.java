@@ -204,6 +204,9 @@ public class BotState
 	// Regions from which a player is able to pick his preferred starting regions
 	public void setPickableStartingRegions(String[] mapInput)
 	{
+		// Make sure to clear all previously known starting regions
+		m_pickableStartingRegions.clear();
+
 		for (int i = 2; i < mapInput.length; i++)
 		{
 			int regionId;

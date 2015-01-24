@@ -92,7 +92,7 @@ public class Gir implements Bot
 		////////////////////////////////////////////////////////////////////////////////////
 		// Randomly set remaining
 		////////////////////////////////////////////////////////////////////////////////////
-		while (preferredStartingRegions.size() < max)
+		while (pickableRegions.size() > 0 && preferredStartingRegions.size() < max)
 		{
 			double rand = Math.random();
 			int r = (int) (rand * pickableRegions.size());

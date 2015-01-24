@@ -49,7 +49,8 @@ public class BotParser
 			String line = m_scan.nextLine().trim();
 			if (line.length() == 0) { continue; }
 			String[] parts = line.split(" ");
-			if (parts[0].equals("pick_starting_regions"))
+			// Warlight2 function.
+			if (parts[0].equals("pick_starting_region"))
 			{
 				// Note: the starting regions are set before this happens
 				// In Warlight2, this will be called repeatedly between bots until there are no more starting regions left.
@@ -73,6 +74,23 @@ public class BotParser
 //				}
 //
 //				System.out.println(output);
+			}
+			// Warlight1 function. Warlight2 does not use this anymore
+			else if (parts[0].equals("pick_starting_regions"))
+			{
+				// Note: the starting regions are set before this happens
+				// In Warlight2, this will be called repeatedly between bots until there are no more starting regions left.
+				// parts[1] is a timeout value
+				m_currentState.setPickableStartingRegions(parts);
+				// Pick which regions you want to start with.
+				ArrayList<Region> preferredStartingRegions = m_bot.getPreferredStartingRegions(m_currentState, Long.valueOf(parts[1]));
+				String output = "";
+				for (Region region : preferredStartingRegions)
+				{
+					output = output.concat(region.getId() + " ");
+				}
+
+				System.out.println(output);
 			}
 			else if (parts.length == 3 && parts[0].equals("go"))
 			{
@@ -126,6 +144,14 @@ public class BotParser
 				// All visible opponent moves are given
 				m_currentState.readOpponentMoves(parts);
 			}
+			else if (parts[0].equals("Output"))
+			{
+				if (m_currentState.isDebugMode())
+				{
+					System.out.println("DB: "+line);
+				}
+			}
+			// Debug stuff
 			else if (parts[0].equals("debug_line") && m_currentState.isDebugMode())
 			{
 				System.out.println("DB: "+line);
