@@ -1,5 +1,6 @@
 package main;
 
+// This class was used to debug this bot for the Regions in the first Warlight challenge
 import java.util.HashMap;
 
 public class SuperRegionName
@@ -8,12 +9,12 @@ public class SuperRegionName
 	static
 	{
 		m_names = new HashMap<Integer, String>();
-		m_names.put(1, "North America");
-		m_names.put(2, "South America");
-		m_names.put(3, "Europe");
-		m_names.put(4, "Africa");
-		m_names.put(5, "Asia");
-		m_names.put(6, "Australia");
+//		m_names.put(1, "North America");
+//		m_names.put(2, "South America");
+//		m_names.put(3, "Europe");
+//		m_names.put(4, "Africa");
+//		m_names.put(5, "Asia");
+//		m_names.put(6, "Australia");
 	}
 
 	// Private constructor
@@ -30,7 +31,8 @@ public class SuperRegionName
 		}
 		else
 		{
-			return "Unknown";
+			return "SuperRegion "+id;
+//			return "Unknown";
 		}
 	}
 }

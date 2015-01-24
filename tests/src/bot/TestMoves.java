@@ -1,10 +1,10 @@
 package bot;
 
-import junit.framework.Assert;
 import main.Region;
 import main.SuperRegionName;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
+import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,6 +98,11 @@ public class TestMoves
 			{
 				// Update settings
 				m_currentState.updateSettings(parts[1], parts[2]);
+			}
+			else if (parts.length > 2 && parts[0].equals("settings"))
+			{
+				// Update settings
+				m_currentState.updateSettings(parts[1], parts);
 			}
 			else if (parts[0].equals("setup_map"))
 			{

@@ -42,7 +42,6 @@ public class Gir implements Bot
 	private Strategy m_previousStrategy;
 	private SuperRegion m_strategySuperRegion; // used with Strategy.CONTINENT_GET
 	private int m_strategyMoveCounter;
-
 	private int m_noAttacksCounter;
 
 
@@ -93,7 +92,7 @@ public class Gir implements Bot
 		////////////////////////////////////////////////////////////////////////////////////
 		// Randomly set remaining
 		////////////////////////////////////////////////////////////////////////////////////
-		while (preferredStartingRegions.size() < max)
+		while (pickableRegions.size() > 0 && preferredStartingRegions.size() < max)
 		{
 			double rand = Math.random();
 			int r = (int) (rand * pickableRegions.size());
@@ -190,8 +189,9 @@ public class Gir implements Bot
 			}
 		}
 
-		// TODO: try to capture the center of the world (something with neighborSuperRegions > 1)
 
+		// TODO: try to capture the center of the world (something with neighborSuperRegions > 1)
+		//       Yeeeaaah... i don't think this is going to happen :-)
 
 
 		if (state.getOwnedRegionsNextToOpponent().size() > 0 && nrOfOwnedSuperRegions == 0)
@@ -444,10 +444,14 @@ public class Gir implements Bot
 		String opponentName = state.getOpponentPlayerName();
 		ArrayList<AttackTransferMove> attackTransferMoves = new ArrayList<AttackTransferMove>();
 
+		// Used for debugging
 		//if (state.getRoundNumber() >= 43)
 		//{
 		//	boolean debugMe = true;
 		//}
+
+		// TODO: Depending on how many rounds are left, we could get more aggressive or something...
+		// See state.getMaxRounds() and state.getRoundNumber()
 
 		////////////////////////////////////////////////////////////////////////////////////
 		// Move armies from the region with the most armies towards the opponent. we just need to find the closes region
@@ -810,7 +814,6 @@ public class Gir implements Bot
 	protected static int SEARCH_FLAG_FIND_ANY = 2;
 	protected static int SEARCH_FLAG_FIND_REGION_ID = 4;
 	protected static int SEARCH_FLAG_FIND_SUPER_REGION_ID = 8;
-
 	protected static int SEARCH_FLAG_WITHIN_SUPER_REGION = 16;
 
 	protected static Region getPath(Region fromRegion, BotState state, int searchFlags) throws Exception

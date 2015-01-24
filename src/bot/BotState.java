@@ -22,20 +22,32 @@ public class BotState
 	private int m_startingArmies; // Number of armies the player can place on map
 	private int m_roundNumber;
 	private boolean m_debugMode;
+	private int m_timeBank;
+	private int m_timePerMove;
+	private int m_maxRounds;
 
 	public static final Comparator<Region> compareArmies = new Comparator<Region>()
 	{
-		public int compare(Region o1, Region o2) { return o2.compareTo(o1); }
+		public int compare(Region o1, Region o2)
+		{
+			return o2.compareTo(o1);
+		}
 	};
 
 	public static final Comparator<Region> compareArmiesDescending = new Comparator<Region>()
 	{
-		public int compare(Region o1, Region o2) { return 0-o2.compareTo(o1); }
+		public int compare(Region o1, Region o2)
+		{
+			return 0 - o2.compareTo(o1);
+		}
 	};
 
 	public static final Comparator<SuperRegion> comparePreferredSuperRegions = new Comparator<SuperRegion>()
 	{
-		public int compare(SuperRegion o1, SuperRegion o2) { return 0-o2.comparePreferredTo(o1); }
+		public int compare(SuperRegion o1, SuperRegion o2)
+		{
+			return 0 - o2.comparePreferredTo(o1);
+		}
 	};
 
 
@@ -72,6 +84,26 @@ public class BotState
 			m_startingArmies = Integer.parseInt(value);
 			m_roundNumber++; // Next round
 		}
+		else if (key.equals("timebank"))
+		{
+			m_timeBank = Integer.parseInt(value);
+		}
+		else if (key.equals("time_per_move"))
+		{
+			m_timePerMove = Integer.parseInt(value);
+		}
+		else if (key.equals("max_rounds"))
+		{
+			m_maxRounds = Integer.parseInt(value);
+		}
+	}
+
+	public void updateSettings(String key, String[] mapInput)
+	{
+		if (key.equals("starting_regions"))
+		{
+			setPickableStartingRegions(mapInput);
+		}
 	}
 
 	//initial map is given to the bot with all the information except for player and armies info
@@ -89,8 +121,7 @@ public class BotState
 					i++;
 					reward = Integer.parseInt(mapInput[i]);
 					m_fullMap.add(new SuperRegion(superRegionId, reward));
-				}
-				catch (Exception e)
+				} catch (Exception e)
 				{
 					System.err.println("Unable to parse SuperRegions");
 				}
@@ -107,8 +138,7 @@ public class BotState
 					superRegionId = Integer.parseInt(mapInput[i]);
 					SuperRegion superRegion = m_fullMap.getSuperRegion(superRegionId);
 					m_fullMap.add(new Region(regionId, superRegion));
-				}
-				catch (Exception e)
+				} catch (Exception e)
 				{
 					System.err.println("Unable to parse Regions " + e.getMessage());
 				}
@@ -128,10 +158,44 @@ public class BotState
 						Region neighbor = m_fullMap.getRegion(Integer.parseInt(neighborIds[j]));
 						region.addNeighbor(neighbor);
 					}
-				}
-				catch (Exception e)
+				} catch (Exception e)
 				{
 					System.err.println("Unable to parse Neighbors " + e.getMessage());
+				}
+			}
+		}
+		else if (mapInput[1].equals("wastelands"))
+		{
+			for (i = 2; i < mapInput.length; i++)
+			{
+				try
+				{
+					Region region = m_fullMap.getRegion(Integer.parseInt(mapInput[i]));
+					region.setPlayerName("unknown");
+					// I hope this value gets updated later.
+					region.setArmies(6); // TODO: Hard-coded value. somewhere between 2 and 10...
+					i++;
+				} catch (Exception e)
+				{
+					System.err.println("Unable to parse Wastelands " + e.getMessage());
+				}
+			}
+		}
+		else if (mapInput[1].equals("opponent_starting_regions"))
+		{
+			// So, starting regions are decided.
+			for (i = 2; i < mapInput.length; i++)
+			{
+				try
+				{
+					Region region = m_fullMap.getRegion(Integer.parseInt(mapInput[i]));
+					region.setPlayerName(m_opponentName);
+					// I hope this value gets updated later.
+					region.setArmies(6); // TODO: Hard-coded value. somewhere between 2 and 10...
+					i++;
+				} catch (Exception e)
+				{
+					System.err.println("Unable to parse Opponent starting regions " + e.getMessage());
 				}
 			}
 		}
@@ -140,6 +204,9 @@ public class BotState
 	// Regions from which a player is able to pick his preferred starting regions
 	public void setPickableStartingRegions(String[] mapInput)
 	{
+		// Make sure to clear all previously known starting regions
+		m_pickableStartingRegions.clear();
+
 		for (int i = 2; i < mapInput.length; i++)
 		{
 			int regionId;
@@ -148,8 +215,7 @@ public class BotState
 				regionId = Integer.parseInt(mapInput[i]);
 				Region pickableRegion = m_fullMap.getRegion(regionId);
 				m_pickableStartingRegions.add(pickableRegion);
-			}
-			catch (Exception e)
+			} catch (Exception e)
 			{
 				System.err.println("Unable to parse pickable regions " + e.getMessage());
 			}
@@ -176,8 +242,7 @@ public class BotState
 				region.setPlayerName(playerName);
 				region.setArmies(armies);
 				region.setUpdated(true);
-			}
-			catch (Exception e)
+			} catch (Exception e)
 			{
 				System.err.println("Unable to parse GameMap Update " + e.getMessage());
 			}
@@ -207,7 +272,6 @@ public class BotState
 		m_opponentVisible = false;
 
 		// Build list of owned Regions and one with owned Regions next to opponent
-
 		for (Region region : m_visibleMap.getRegions())
 		{
 			if (region.ownedByPlayer(m_myName))
@@ -283,8 +347,7 @@ public class BotState
 					continue; // Never happens
 				}
 				m_opponentMoves.add(move);
-			}
-			catch (Exception e)
+			} catch (Exception e)
 			{
 				System.err.println("Unable to parse Opponent moves " + e.getMessage());
 			}
@@ -340,6 +403,37 @@ public class BotState
 	{
 		return m_debugMode;
 	}
+
+	public int getTimeBank()
+	{
+		return m_timeBank;
+	}
+
+	public void startCountingFromTimeBank()
+	{
+		// TODO:
+	}
+
+	public void stopCountingFromTimeBank()
+	{
+		// TODO:
+	}
+
+	public void updateTimeBankForMove()
+	{
+		m_timeBank += m_timePerMove;
+	}
+
+	public int getTimePerMove()
+	{
+		return m_timePerMove;
+	}
+
+	public int getMaxRounds()
+	{
+		return m_timeBank;
+	}
+
 
 	// Custom stats
 	public ArrayList<Region> getOwnedRegions()
