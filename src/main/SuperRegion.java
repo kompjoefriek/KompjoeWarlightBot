@@ -107,22 +107,70 @@ public class SuperRegion
 
 	public int comparePreferredTo(SuperRegion compareSuperRegion)
 	{
-		// Exception for australia (http://webtrax.hu/myfacewhen/faces/lineart-memes/nothing-to-do-here-jet-pack-guy.jpg)
-		if (getBorderRegions().size() == 1) { return 1; }
-		if (compareSuperRegion.getBorderRegions().size() == 1) { return -1; }
-		// Smaller super regions are preferred
-		if (getSubRegions().size() != compareSuperRegion.getSubRegions().size())
+		// No reward? DO NO WANT (http://weknowmemes.com/wp-content/uploads/2011/11/do-not-want-guy.jpg)
+		if (getArmiesReward() == 0) { return -1; }
+		if (compareSuperRegion.getArmiesReward() == 0) { return 1; }
+
+		int totalArmies = 0;
+		for (Region region : getSubRegions())
 		{
-			return getSubRegions().size() - compareSuperRegion.getSubRegions().size();
+			if (region.getArmies() > 2)
+			{
+				totalArmies += region.getArmies() * 2;
+			}
+			else
+			{
+				totalArmies += region.getArmies();
+			}
 		}
-		// Less border regions are preferred
-		if (getBorderRegions().size() != compareSuperRegion.getBorderRegions().size())
+		int totalCompareArmies = 0;
+		for (Region region : compareSuperRegion.getSubRegions())
 		{
-			return getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
+			if (region.getArmies() > 2)
+			{
+				totalCompareArmies += region.getArmies() * 2;
+			}
+			else
+			{
+				totalCompareArmies += region.getArmies();
+			}
+		}
+		if (totalArmies > 0 && totalCompareArmies > 0)
+		{
+			double superValue = getArmiesReward() / (double)totalArmies;
+			double compareSuperValue = compareSuperRegion.getArmiesReward() / (double)totalCompareArmies;
+			if (superValue > compareSuperValue)
+			{
+				return -1;
+			}
+			if (superValue < compareSuperValue)
+			{
+				return 1;
+			}
 		}
 
+		// Smaller super regions are preferred
+		//if (getSubRegions().size() != compareSuperRegion.getSubRegions().size())
+		//{
+		//	return getSubRegions().size() - compareSuperRegion.getSubRegions().size();
+		//}
 		// More award is preferred, so i turned them around here :-)
-		return compareSuperRegion.getArmiesReward() - getArmiesReward();
+		if (compareSuperRegion.getArmiesReward() != getArmiesReward())
+		{
+			return compareSuperRegion.getArmiesReward() - getArmiesReward();
+		}
+
+		// Less border regions are preferred
+		return getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
+
+		// Less border regions are preferred
+		//if (getBorderRegions().size() != compareSuperRegion.getBorderRegions().size())
+		//{
+		//	return getBorderRegions().size() - compareSuperRegion.getBorderRegions().size();
+		//}
+
+		// More award is preferred, so i turned them around here :-)
+		//return compareSuperRegion.getArmiesReward() - getArmiesReward();
 	}
 
 

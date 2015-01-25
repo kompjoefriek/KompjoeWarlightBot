@@ -29,7 +29,7 @@ public class TestBotParser
 	public void testStartupWithErrors1() throws Exception
 	{
 		Bot bot = new Gir();
-		BotParser parser = parser = new BotParser(bot, "tests/data/startup_with_errors_1.txt");
+		BotParser parser = parser = new BotParser(bot, "tests/data/wl2_startup_with_errors_1.txt");
 		// This should not write to stderr and cause no exceptions and stuff
 
 		FailTestPrintStream stream = new FailTestPrintStream(System.err);

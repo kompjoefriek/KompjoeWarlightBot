@@ -1,0 +1,850 @@
+debug_line http://theaigames.com/competitions/warlight-ai-challenge-2/games/54c3fb954b5ab245585321b7
+debug_line Round 4: attacked wasteland with many armies instead of opponent
+
+settings timebank 10000
+
+settings time_per_move 500
+
+settings max_rounds 117
+
+settings your_bot player2
+
+settings opponent_bot player1
+
+setup_map super_regions 1 2 2 4 3 3 4 5 5 5 6 2 7 3 8 3 9 6 10 3
+
+setup_map regions 1 1 2 1 3 1 4 2 5 2 6 2 7 2 8 2 9 2 10 3 11 3 12 3 13 4 14 4 15 4 16 4 17 4 18 5 19 5 20 5 21 5 22 5 23 5 24 5 25 6 26 6 27 6 28 6 29 7 30 7 31 7 32 7 33 8 34 8 35 8 36 8 37 9 38 9 39 9 40 9 41 9 42 9 43 9 44 10 45 10 46 10 47 10
+
+setup_map neighbors 1 5,4,3,2 2 3,7 3 7,8,5,6 4 6,5,11,10 5 6 6 9,30,8,11 7 15,13,8,14 8 17,15,31,33,30 9 29,30,11,12 10 11 11 12 12 29 13 14 14 16,15,21 15 16,17,33,34 16 36,34,23 17 33 18 20,19,22,27 19 26,27 20 21,22 21 23,22 22 27,23,41 23 41,24,43 24 43 25 26 26 27,28 27 38,40,28,41 28 37,40,39 29 30,44,32 30 32,31 31 32,33 32 35,44,33 33 35,34 34 36,35,47 35 47,44,46 37 42,39 38 40,41 39 40,42 40 42,43,41 41 43 44 45,46 45 46,47 46 47
+
+setup_map wastelands 12 13 15 46 47
+
+settings starting_regions 2 8 10 14 19 27 30 36 37 45
+
+pick_starting_region 10000 8 10 14 19 27 30 36 37 45
+
+Output from your bot: "10"
+
+pick_starting_region 10000 8 14 19 27 30 36 37 45
+
+Output from your bot: "45"
+
+pick_starting_region 10000 14 27 30 36 37
+
+Output from your bot: "27"
+
+pick_starting_region 10000 14 30 36 37
+
+Output from your bot: "30"
+
+pick_starting_region 10000 14
+
+Output from your bot: "14"
+
+setup_map opponent_starting_regions 2 8 19 36 37
+
+settings starting_armies 5
+
+update_map 10 player2 2 14 player2 2 27 player2 2 30 player2 2 45 player2 2 4 neutral 2 11 neutral 2 13 neutral 10 7 neutral 2 16 neutral 2 15 neutral 10 21 neutral 2 18 neutral 2 19 player1 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 6 neutral 2 8 player1 2 9 neutral 2 29 neutral 2 32 neutral 2 31 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves
+
+Round 1
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 27 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 27 19 6"
+
+settings starting_armies 5
+
+update_map 10 player2 2 14 player2 2 19 player2 5 27 player2 1 30 player2 2 45 player2 2 4 neutral 2 11 neutral 2 13 neutral 10 7 player1 5 16 neutral 2 15 neutral 10 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 6 neutral 2 8 player1 1 9 neutral 2 29 neutral 2 32 neutral 2 31 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 8 5 player1 attack/transfer 8 7 6
+
+Round 2
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 30 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 30 8 6"
+
+settings starting_armies 5
+
+update_map 8 player2 5 10 player2 2 14 player2 2 19 player2 5 27 player2 1 30 player2 1 45 player2 2 3 player1 3 6 neutral 2 7 player1 1 17 neutral 2 15 neutral 10 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 13 neutral 10 16 neutral 2 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 attack/transfer 7 3 4
+
+Round 3
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 8 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 8 3 9"
+
+settings starting_armies 5
+
+update_map 3 player2 7 8 player2 1 10 player2 2 19 player2 5 27 player2 1 30 player2 1 45 player2 2 1 neutral 2 2 player1 2 7 player1 1 5 neutral 2 6 neutral 2 17 neutral 2 15 neutral 10 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 7 5 player1 attack/transfer 7 14 5
+
+Round 4
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 3 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 3 2 11"
+
+settings starting_armies 5
+
+update_map 2 player2 6 3 player2 1 8 player2 1 10 player2 2 19 player2 5 27 player2 1 30 player2 1 45 player2 2 1 neutral 2 7 player1 1 5 neutral 2 6 neutral 2 17 neutral 2 15 neutral 10 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 2 5
+
+Round 5
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 2 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 2 7 10"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 6 8 player2 1 10 player2 2 19 player2 5 27 player2 1 30 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 14 player1 1 17 neutral 2 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 7 5
+
+Round 6
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 7 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 7 14 10"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 2 14 player2 6 19 player2 5 27 player2 1 30 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 16 player1 2 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 14 5
+
+Round 7
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 14 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 14 16 10"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 2 14 player2 1 16 player2 5 19 player2 5 27 player2 1 30 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 21 neutral 2 36 player1 2 34 neutral 2 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 16 5
+
+Round 8
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 16 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 16 36 9"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 2 14 player2 1 16 player2 5 19 player2 5 27 player2 1 30 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 21 neutral 2 36 player1 1 34 neutral 2 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 36 5
+
+Round 9
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 16 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 16 36 9"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 2 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 36 player2 8 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 neutral 2 4 neutral 2 11 neutral 2 21 neutral 2 34 player1 4 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 36 5 player1 attack/transfer 36 34 5
+
+Round 10
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 36 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 36 34 12"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 2 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 34 player2 11 36 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 7 4 neutral 2 11 neutral 2 21 neutral 2 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 35 neutral 2 47 neutral 10 44 neutral 2 46 neutral 10
+
+opponent_moves player1 place_armies 34 5 player1 attack/transfer 34 33 8
+
+Round 11
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 10 2,player2 place_armies 34 3"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 34 33 13"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 33 player2 12 34 player2 1 36 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 4 neutral 2 11 neutral 2 21 neutral 2 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 9 neutral 2 29 neutral 2 32 neutral 2 35 player1 10 47 neutral 10 44 neutral 2 46 neutral 10
+
+opponent_moves player1 place_armies 33 5 player1 attack/transfer 33 35 11
+
+Round 12
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 10 2,player2 place_armies 33 3"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 33 35 14,player2 attack/transfer 10 11 5"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 33 player2 4 36 player2 1 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 34 player1 5 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 35 player1 1 44 neutral 2 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 35 5 player1 attack/transfer 35 34 6
+
+Round 13
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 33 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 33 player2 9 45 player2 2 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 36 player1 3 34 player1 1 23 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 35 player1 1 44 player1 4 46 neutral 10 47 neutral 10
+
+opponent_moves player1 place_armies 35 5 player1 attack/transfer 34 36 4 player1 attack/transfer 35 44 5
+
+Round 14
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 33 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 33 34 6,player2 attack/transfer 33 35 7"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 19 player2 5 27 player2 1 30 player2 1 33 player2 1 34 player2 5 35 player2 6 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 16 player1 6 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 36 player1 1 47 neutral 10 44 player1 1 46 neutral 10
+
+opponent_moves player1 place_armies 36 5 player1 attack/transfer 36 16 7 player1 attack/transfer 44 45 3
+
+Round 15
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 35 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 35 44 10"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 30 player2 1 33 player2 1 34 player2 5 35 player2 1 44 player2 9 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 14 player1 4 17 neutral 2 31 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 16 player1 1 36 player1 6 47 neutral 10 46 neutral 10 45 player1 2
+
+opponent_moves player1 place_armies 36 5 player1 attack/transfer 16 14 5
+
+Round 16
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 44 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 44 45 13"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 8 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 30 player2 1 33 player2 1 35 player2 1 44 player2 1 45 player2 12 1 neutral 2 7 player1 2 5 neutral 2 6 neutral 2 17 neutral 2 15 neutral 10 31 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 34 player1 6 47 neutral 10 46 neutral 10
+
+opponent_moves player1 place_armies 36 5 player1 attack/transfer 14 7 3 player1 attack/transfer 36 34 10
+
+Round 17
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 2 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 45 46 11,player2 attack/transfer 2 7 5"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 4 8 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 30 player2 1 35 player2 1 44 player2 1 45 player2 5 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 14 player1 1 17 neutral 2 31 neutral 2 33 player1 4 4 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 34 player1 1 47 neutral 10 46 neutral 3
+
+opponent_moves player1 attack/transfer 34 33 5
+
+Round 18
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 7 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 7 14 8"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 7 19 player2 5 27 player2 1 30 player2 1 44 player2 1 45 player2 5 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 1 4 neutral 2 12 neutral 10 9 neutral 2 16 player1 1 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 46 neutral 3 35 player1 7 47 neutral 10
+
+opponent_moves player1 place_armies 34 5 player1 attack/transfer 33 35 3 player1 attack/transfer 34 35 5
+
+Round 19
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 14 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 14 16 11"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 6 19 player2 5 27 player2 1 30 player2 1 45 player2 5 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 1 4 neutral 2 12 neutral 10 9 neutral 2 16 player1 2 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2 44 player1 5 46 neutral 3 47 neutral 10
+
+opponent_moves player1 place_armies 16 8 player1 attack/transfer 16 23 2 player1 attack/transfer 35 44 6
+
+Round 20
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 14 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 14 16 10"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 9 19 player2 5 27 player2 1 30 player2 1 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 1 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 36 player1 1 34 player1 1 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2
+
+opponent_moves player1 place_armies 44 8 player1 attack/transfer 44 45 12
+
+Round 21
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 16 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 16 34 6,player2 attack/transfer 16 36 7"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 36 player2 6 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 1 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 34 player1 5 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 neutral 2
+
+opponent_moves player1 place_armies 34 8
+
+Round 22
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 36 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 36 34 10"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 1 34 player2 7 36 player2 1 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 1 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 32 player1 4 35 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 33 5 player1 attack/transfer 33 32 5
+
+Round 23
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 34 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 34 35 5,player2 attack/transfer 34 33 6"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 33 player2 5 34 player2 2 36 player2 1 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 30 player1 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 35 player1 3 32 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 35 5 player1 attack/transfer 32 30 3
+
+Round 24
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 33 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 33 32 9"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 33 player2 6 34 player2 2 36 player2 1 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 30 player1 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 35 player1 3 32 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 32 5
+
+Round 25
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 33 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 33 35 5,player2 attack/transfer 33 32 5"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 32 player2 4 33 player2 1 35 player2 4 36 player2 1 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 30 player1 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 34 player1 6 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 44 player1 1 47 neutral 10 46 player1 5
+
+opponent_moves player1 place_armies 35 5 player1 attack/transfer 35 34 7
+
+Round 26
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 32 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 32 30 8"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 30 player2 7 32 player2 1 33 player2 1 36 player2 1 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 34 player1 3 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 neutral 2 35 player1 4 44 player1 1
+
+opponent_moves player1 place_armies 44 5 player1 attack/transfer 34 35 5 player1 attack/transfer 44 35 5
+
+Round 27
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 32 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 30 29 6"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 16 player2 1 19 player2 5 27 player2 1 29 player2 5 30 player2 1 32 player2 6 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 neutral 2 31 neutral 2 33 player1 2 4 neutral 2 12 neutral 10 9 neutral 2 21 neutral 2 36 player1 6 34 player1 1 23 neutral 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 44 player1 1 35 player1 1
+
+opponent_moves player1 place_armies 34 5 player1 attack/transfer 34 36 7 player1 attack/transfer 35 33 3
+
+Round 28
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 32 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 32 33 5,player2 attack/transfer 32 35 5"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 8 player2 1 10 player2 1 11 player2 4 14 player2 1 19 player2 5 27 player2 1 29 player2 5 30 player2 1 32 player2 1 35 player2 4 1 neutral 2 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 17 player1 5 31 neutral 2 33 player1 1 4 neutral 2 12 neutral 10 9 neutral 2 16 player1 4 21 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 44 player1 1 34 player1 1 47 neutral 10 46 player1 5
+
+opponent_moves player1 place_armies 33 8 player1 attack/transfer 33 17 6 player1 attack/transfer 36 16 5
+
+Round 29
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 29 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 29 44 9"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 7 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 29 player2 1 30 player2 1 32 player2 1 35 player2 1 44 player2 8 1 neutral 2 8 player1 3 5 neutral 2 6 neutral 2 15 neutral 10 13 neutral 10 14 player1 2 4 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 31 neutral 2 33 player1 1 34 player1 3 47 neutral 10 46 player1 5 45 player1 1
+
+opponent_moves player1 place_armies 34 5 player1 attack/transfer 16 14 3 player1 attack/transfer 17 8 4 player1 attack/transfer 34 35 5
+
+Round 30
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 44 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 44 46 6,player2 attack/transfer 44 45 6"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 29 player2 1 30 player2 1 32 player2 1 44 player2 3 45 player2 5 1 neutral 2 7 player1 1 8 player1 1 5 neutral 2 6 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 31 neutral 2 35 player1 6 33 player1 1 46 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 34 5 player1 attack/transfer 8 7 2 player1 attack/transfer 34 35 7
+
+Round 31
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 45 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 45 46 9"
+
+settings starting_armies 5
+
+update_map 2 player2 1 3 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 29 player2 1 30 player2 1 44 player2 3 45 player2 1 46 player2 8 1 neutral 2 7 player1 1 8 player1 1 5 neutral 2 6 neutral 2 4 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 32 player1 4 31 player1 7 35 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 33 8 player1 attack/transfer 33 31 8 player1 attack/transfer 35 32 5
+
+Round 32
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 46 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 46 35 12"
+
+settings starting_armies 5
+
+update_map 2 player2 1 10 player2 1 11 player2 4 19 player2 5 27 player2 1 29 player2 1 35 player2 11 44 player2 3 45 player2 1 46 player2 1 1 neutral 2 3 player1 7 7 player1 1 4 neutral 2 6 neutral 2 12 neutral 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 30 player1 8 32 player1 1 33 player1 1 34 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 7 8 player1 attack/transfer 7 3 8 player1 attack/transfer 31 30 6 player1 attack/transfer 32 30 3
+
+Round 33
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 11 2,player2 place_armies 35 3"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 35 33 6,player2 attack/transfer 35 32 7,player2 attack/transfer 11 12 5"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 1 19 player2 5 27 player2 1 32 player2 6 35 player2 3 44 player2 3 45 player2 1 46 player2 1 4 neutral 2 6 neutral 2 12 neutral 7 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 player1 6 30 player1 1 31 player1 1 33 player1 2 34 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 33 5 player1 attack/transfer 3 2 6 player1 attack/transfer 30 29 7
+
+Round 34
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 32 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 1 19 player2 5 27 player2 1 32 player2 11 35 player2 3 45 player2 1 46 player2 1 4 neutral 2 6 neutral 2 12 neutral 7 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 29 player1 1 30 player1 1 31 player1 1 44 player1 3 33 player1 2 34 player1 6 47 neutral 10
+
+opponent_moves player1 place_armies 34 5 player1 attack/transfer 29 44 5
+
+Round 35
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 10 2,player2 place_armies 32 3"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 32 44 6,player2 attack/transfer 32 29 7,player2 attack/transfer 10 11 2"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 3 19 player2 5 27 player2 1 29 player2 6 32 player2 1 44 player2 4 45 player2 1 46 player2 1 4 neutral 2 6 neutral 2 12 neutral 7 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 30 player1 1 31 player1 1 35 player1 10 33 player1 2 47 neutral 10
+
+opponent_moves player1 place_armies 34 7 player1 attack/transfer 34 35 12
+
+Round 36
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 29 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 29 30 10"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 3 19 player2 5 27 player2 1 29 player2 3 45 player2 1 46 player2 1 4 neutral 2 6 neutral 2 12 neutral 7 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 30 player1 1 44 player1 6 32 player1 3 47 neutral 10 35 player1 1
+
+opponent_moves player1 place_armies 30 10 player1 attack/transfer 30 32 4 player1 attack/transfer 35 44 9
+
+Round 37
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 29 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 3 19 player2 5 27 player2 1 29 player2 1 46 player2 1 4 neutral 2 6 neutral 2 12 neutral 7 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 30 player1 1 44 player1 1 32 player1 8 35 player1 1 45 player1 4 47 neutral 10
+
+opponent_moves player1 place_armies 32 10 player1 attack/transfer 32 29 12 player1 attack/transfer 44 45 5
+
+Round 38
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 46 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 3 19 player2 5 27 player2 1 46 player2 4 4 neutral 2 6 neutral 2 12 neutral 7 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 44 player1 1 35 player1 1 45 player1 1 47 neutral 10
+
+opponent_moves player1 place_armies 32 10 player1 attack/transfer 32 29 17 player1 attack/transfer 45 46 3
+
+Round 39
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 46 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 46 35 8"
+
+settings starting_armies 5
+
+update_map 10 player2 1 11 player2 3 19 player2 5 27 player2 1 35 player2 7 4 neutral 2 6 neutral 2 12 player1 10 9 neutral 2 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2 33 player1 2 32 player1 1 34 player1 1 47 neutral 10 44 player1 1 46 player1 12
+
+opponent_moves player1 place_armies 44 13 player1 attack/transfer 29 12 15 player1 attack/transfer 44 46 13
+
+Round 40
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 35 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 10 player2 1 19 player2 5 27 player2 1 4 neutral 2 11 player1 7 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2
+
+opponent_moves player1 place_armies 33 10 player1 attack/transfer 12 11 9 player1 attack/transfer 33 35 11 player1 attack/transfer 46 35 11
+
+Round 41
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 10 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 10 player2 4 19 player2 5 27 player2 1 4 player1 3 11 player1 4 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2
+
+opponent_moves player1 place_armies 11 13 player1 attack/transfer 11 4 4 player1 attack/transfer 11 6 4 player1 attack/transfer 11 9 4 player1 attack/transfer 11 10 4
+
+Round 42
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 10 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 10 player2 9 19 player2 5 27 player2 1 4 player1 1 11 player1 6 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2
+
+opponent_moves player1 place_armies 4 13 player1 attack/transfer 4 5 15 player1 attack/transfer 9 11 2
+
+Round 43
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 10 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 10 11 6,player2 attack/transfer 10 4 7"
+
+settings starting_armies 5
+
+update_map 19 player2 5 27 player2 1 18 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 neutral 2
+
+opponent_moves player1 place_armies 4 17 player1 attack/transfer 1 4 2 player1 attack/transfer 4 10 17
+
+Round 44
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 19 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 19 18 9"
+
+settings starting_armies 5
+
+update_map 18 player2 8 19 player2 1 27 player2 1 20 neutral 2 22 neutral 2 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2
+
+opponent_moves
+
+Round 45
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 19 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 19 18 5,player2 attack/transfer 18 20 7"
+
+settings starting_armies 5
+
+update_map 18 player2 6 19 player2 1 20 player2 6 27 player2 1 22 neutral 2 26 neutral 2 21 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2
+
+opponent_moves
+
+Round 46
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 19 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 19 18 5,player2 attack/transfer 20 21 5,player2 attack/transfer 18 22 5"
+
+settings starting_armies 5
+
+update_map 18 player2 6 19 player2 1 20 player2 1 21 player2 4 22 player2 4 27 player2 1 26 neutral 2 14 player1 20 23 neutral 1 41 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2
+
+opponent_moves player1 attack/transfer 15 14 18
+
+Round 47
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 21 5"
+
+go attack/transfer 10000
+
+Output from your bot: "player2 attack/transfer 18 22 5"
+
+settings starting_armies 5
+
+update_map 18 player2 1 19 player2 1 20 player2 1 22 player2 9 27 player2 1 26 neutral 2 21 player1 41 23 player1 18 41 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2
+
+opponent_moves player1 place_armies 14 28 player1 attack/transfer 7 14 18 player1 attack/transfer 13 14 15 player1 attack/transfer 14 21 47 player1 attack/transfer 16 23 19
+
+Round 48
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 22 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 18 player2 1 19 player2 1 22 player2 4 27 player2 1 20 player1 67 26 neutral 2 21 player1 34 23 player1 8 41 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2
+
+opponent_moves player1 place_armies 21 28 player1 attack/transfer 14 21 33 player1 attack/transfer 21 20 68 player1 attack/transfer 23 22 17
+
+Round 49
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 22 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map 19 player2 1 27 player2 1 18 player1 65 26 neutral 2 38 neutral 2 40 neutral 2 28 neutral 2 41 neutral 2 22 player1 61
+
+opponent_moves player1 place_armies 23 28 player1 attack/transfer 14 21 9 player1 attack/transfer 20 18 66 player1 attack/transfer 21 22 33 player1 attack/transfer 23 22 35
+
+Round 50
+
+go place_armies 10000
+
+Output from your bot: "player2 place_armies 27 5"
+
+go attack/transfer 10000
+
+Output from your bot: "No moves"
+
+settings starting_armies 5
+
+update_map
+
+opponent_moves player1 place_armies 18 28 player1 attack/transfer 18 19 46 player1 attack/transfer 18 27 46

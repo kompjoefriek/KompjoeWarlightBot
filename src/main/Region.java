@@ -14,7 +14,7 @@ public class Region
 
 	public Region(int id, SuperRegion superRegion)
 	{
-		this(id, superRegion, "unknown", 0);
+		this(id, superRegion, "unknown", 2);
 	}
 
 	public Region(int id, SuperRegion superRegion, String playerName, int armies)

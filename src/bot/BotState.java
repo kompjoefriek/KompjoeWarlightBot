@@ -173,7 +173,7 @@ public class BotState
 					Region region = m_fullMap.getRegion(Integer.parseInt(mapInput[i]));
 					region.setPlayerName("unknown");
 					// I hope this value gets updated later.
-					region.setArmies(6); // TODO: Hard-coded value. somewhere between 2 and 10...
+					region.setArmies(10); // TODO: Hard-coded value. seems to be 10 every time i checked
 					i++;
 				} catch (Exception e)
 				{
@@ -191,7 +191,7 @@ public class BotState
 					Region region = m_fullMap.getRegion(Integer.parseInt(mapInput[i]));
 					region.setPlayerName(m_opponentName);
 					// I hope this value gets updated later.
-					region.setArmies(6); // TODO: Hard-coded value. somewhere between 2 and 10...
+					region.setArmies(2); // Starting regions are always 2
 					i++;
 				} catch (Exception e)
 				{
