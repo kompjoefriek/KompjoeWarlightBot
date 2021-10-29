@@ -8,5 +8,5 @@ I just started with their [example bot][3], and went from there.
 It is about as "advanced" as the original Gir ;-)
 
 [1]: https://www.youtube.com/watch?v=df5c8odGMfs "Gir"
-[2]: http://theaigames.com/competitions/warlight-ai-challenge "Warlight"
+[2]: https://web.archive.org/web/20151029154150/http://theaigames.com/competitions/warlight-ai-challenge "Warlight"
 [3]: https://github.com/theaigames/conquest-engine/tree/master/bot "example bot"
